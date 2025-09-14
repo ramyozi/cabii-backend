@@ -24,4 +24,17 @@ export class UserAppService {
   async getOneByLogin(login: string) {
     return await this.userRepository.getOneByLoginOrEmail(login);
   }
+
+  async create(dto: UserCreateRequestDto) {
+    const user = new User();
+
+    user.login = dto.login;
+    user.role = dto.role || RoleEnum.User;
+    user.firstname = dto.firstname;
+    user.lastname = dto.lastname;
+    user.email = dto.email;
+    user.password = this.authService.hashPassword(dto.password);
+
+    return await this.userRepository.save(user);
+  }
 }

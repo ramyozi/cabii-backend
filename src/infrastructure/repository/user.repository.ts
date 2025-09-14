@@ -23,4 +23,12 @@ export class UserRepository extends Repository<User> {
 
     return await query.getManyAndCount();
   }
+
+  async getOneById(userId: string) {
+    const query = this.createQueryBuilder('user').where('user.id = :userId', {
+      userId,
+    });
+
+    return await query.getOne();
+  }
 }

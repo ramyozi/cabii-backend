@@ -9,4 +9,8 @@ export class UserAppService {
   async getList() {
     return await this.userRepository.getAll();
   }
+
+  async getOneById(userId: string) {
+    return await this.userRepository.getOneById(userId);
+  }
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
 import { UserAppService } from './application/service/user.app.service';
 import { UserService } from './domain/service/user.service';
@@ -6,7 +7,7 @@ import { UserController } from './infrastructure/controller/user.controller';
 import { UserRepository } from './infrastructure/repository/user.repository';
 
 @Module({
-  imports: [],
+  imports: [ConfigModule.forRoot()],
   controllers: [
     /* Controller Providers */
     UserController,

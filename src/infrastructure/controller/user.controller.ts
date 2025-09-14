@@ -1,4 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Req } from '@nestjs/common';
+import { instanceToPlain } from 'class-transformer';
 
 import { UserAppService } from '../../application/service/user.app.service';
 
@@ -6,8 +7,16 @@ import { UserAppService } from '../../application/service/user.app.service';
 export class UserController {
   constructor(private readonly userAppService: UserAppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.userAppService.getHello();
+  @Get('users')
+  async getAllUsers(@Req() req: Request) {
+    const users = await this.userAppService.getList();
+
+    return {
+      statusCode: HttpStatus.OK,
+      ...instanceToPlain(users, {
+        strategy: 'exposeAll',
+        groups: ['default'],
+      }),
+    };
   }
 }

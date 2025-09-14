@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
+import { UserRepository } from '../../infrastructure/repository/user.repository';
+
 @Injectable()
 export class UserAppService {
-  getHello(): string {
-    return 'Hello World! Welcome to ' + process.env.APP_NAME;
+  constructor(private readonly userRepository: UserRepository) {}
+
+  async getList() {
+    return await this.userRepository.getAll();
   }
 }

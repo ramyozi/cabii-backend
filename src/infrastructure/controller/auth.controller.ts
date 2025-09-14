@@ -8,11 +8,13 @@ import {
   Res,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { instanceToPlain } from 'class-transformer';
 import express from 'express';
 
 import { RefreshAuthRequestDto } from '../../application/dto/auth/refresh-auth-request.dto';
 import { SignInRequestDto } from '../../application/dto/auth/sign-in-request.dto';
+import { BaseResponseDto } from '../../application/dto/base.response.dto';
 import {
   AuthService,
   COOKIE_REFRESH_TOKEN_NAME,
@@ -37,6 +39,8 @@ export class AuthController {
     try {
       const tokens = await this.authService.signIn(signInRequest);
 
+      this.authService.setCookie(res, tokens);
+
       const requestDurationInMilliseconds = Date.now() - requestStartTime;
 
       if (requestDurationInMilliseconds < requestDuration) {
@@ -57,7 +61,6 @@ export class AuthController {
           setTimeout(resolve, requestDuration - requestDurationInMilliseconds),
         );
       }
-      // definir quelle type des erreurs on veut throw
 
       throw error;
     }
@@ -85,6 +88,11 @@ export class AuthController {
     });
   }
 
+  @ApiOperation({ summary: 'Sign out user' })
+  @ApiResponse({
+    type: BaseResponseDto,
+    status: HttpStatus.OK,
+  })
   @Post('sign-out')
   @HttpCode(HttpStatus.OK)
   async signOut(@Req() req: express.Request, @Res() res: express.Response) {

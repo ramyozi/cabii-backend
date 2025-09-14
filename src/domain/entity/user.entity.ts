@@ -49,8 +49,8 @@ export class User {
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date | null;
 
-  @ApiProperty({ type: () => RoleEnum })
-  @Column('enum', { enum: RoleEnum, array: true, default: [RoleEnum.User] })
+  @ApiProperty({ enum: RoleEnum })
+  @Column('enum', { enum: RoleEnum, default: RoleEnum.User })
   role: RoleEnum;
 
   @Exclude()

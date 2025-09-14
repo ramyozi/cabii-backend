@@ -25,7 +25,7 @@ export class UserAppService {
     return await this.userRepository.getOneByLoginOrEmail(login);
   }
 
-  async create(dto: UserCreateRequestDto) {
+  async create(dto: UserCreateRequestDto): Promise<User> {
     const user = new User();
 
     user.login = dto.login;

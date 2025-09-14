@@ -9,4 +9,5 @@ export const appDataSource: DataSource = new DataSource({
   username: process.env.PG_USERNAME,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DATABASE,
+  synchronize: true,
 });

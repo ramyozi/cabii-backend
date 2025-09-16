@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 import { User } from './user.entity';
+import { Vehicle } from './vehicle.entity';
 
 @Entity()
 export class Driver extends User {
@@ -12,4 +13,8 @@ export class Driver extends User {
   @ApiProperty()
   @Column({ type: 'varchar', length: 255 })
   driverLicenseSerial: string;
+
+  @ApiProperty()
+  @OneToMany(() => Vehicle, (vehicle) => vehicle.driver)
+  vehicles: Vehicle[];
 }

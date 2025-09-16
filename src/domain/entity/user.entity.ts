@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+import { AuthSession } from './auth-session.entity';
 import { RoleEnum } from '../enums/role.enum';
 
 @Entity()
@@ -31,9 +33,13 @@ export class User {
   @Column('varchar', { length: 255, unique: true, nullable: false })
   email: string;
 
+  @ApiProperty()
+  @Column('varchar', { length: 20, unique: true, nullable: false })
+  phone: string;
+
   @Exclude()
-  @Column('varchar', { length: 255, nullable: false })
-  password: string;
+  @Column('varchar', { length: 255, nullable: true })
+  password?: string;
 
   @ApiProperty({ type: () => Date })
   @CreateDateColumn({ type: 'timestamptz' })
@@ -47,7 +53,13 @@ export class User {
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date | null;
 
-  @ApiProperty({ type: () => RoleEnum })
-  @Column('enum', { enum: RoleEnum, array: true, default: [RoleEnum.User] })
+  @ApiProperty({ enum: RoleEnum })
+  @Column('enum', { enum: RoleEnum, default: RoleEnum.User })
   role: RoleEnum;
+
+  @Exclude()
+  @OneToMany(() => AuthSession, (authSession) => authSession.user, {
+    eager: false,
+  })
+  authSessions: AuthSession[];
 }

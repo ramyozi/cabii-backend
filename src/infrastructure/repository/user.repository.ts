@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { User } from '../../domain/entity/user.entity';
@@ -28,7 +28,27 @@ export class UserRepository extends Repository<User> {
     const query = this.createQueryBuilder('user').where('user.id = :userId', {
       userId,
     });
+    const user = await query.getOne();
 
-    return await query.getOne();
+    if (!user) {
+      throw new NotFoundException(`User with Id ${userId} not found`);
+    }
+
+    return user;
+  }
+
+  async getOneByLoginOrEmail(loginOrEmail: string) {
+    const query = this.createQueryBuilder('user').where(
+      'user.login = :loginOrEmail OR user.email = :loginOrEmail',
+      { loginOrEmail },
+    );
+
+    const user = await query.getOne();
+
+    if (!user) {
+      throw new NotFoundException(`User with Id ${loginOrEmail} not found`);
+    }
+
+    return user;
   }
 }

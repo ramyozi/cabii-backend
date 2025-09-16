@@ -1,32 +1,38 @@
-import eslint from '@eslint/js';
-import importPlugin from 'eslint-plugin-import';
-import prettier from 'eslint-plugin-prettier/recommended';
-import unusedImports from 'eslint-plugin-unused-imports';
-import globals from 'globals';
+import eslintPluginImport from 'eslint-plugin-import';
+import eslintPluginUnusedImports from 'eslint-plugin-unused-imports';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
 import tseslint from 'typescript-eslint';
+
+// Prettier's recommended config as a flat config object
+const prettierConfig = {
+  plugins: {
+    prettier: eslintPluginPrettier,
+  },
+  rules: {
+    'prettier/prettier': 'error',
+  },
+};
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'node_modules'],
+    ignores: ['.eslintrc.js'],
   },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  prettier,
   {
-    plugins: {
-      import: importPlugin,
-      'unused-imports': unusedImports,
-    },
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: 'tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
-      },
-      globals: {
-        ...globals.node,
-        ...globals.jest,
+        sourceType: 'module',
       },
     },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+      import: eslintPluginImport,
+      'unused-imports': eslintPluginUnusedImports,
+    },
+    extends: [...tseslint.configs.recommended, prettierConfig],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       'padding-line-between-statements': [
@@ -39,12 +45,13 @@ export default tseslint.config(
         },
         { blankLine: 'always', prev: 'if', next: '*' },
       ],
+
+      // custom rules
       'no-useless-constructor': 'off',
       '@typescript-eslint/no-useless-constructor': 'off',
       'import/prefer-default-export': 'off',
       'class-methods-use-this': 'off',
       'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
-      'prettier/prettier': 'error',
       'import/order': [
         'error',
         {
@@ -55,16 +62,9 @@ export default tseslint.config(
       ],
       'import/newline-after-import': 'error',
       'import/first': 'error',
+
+      // ✅ updated rule name
       'unused-imports/no-unused-imports': 'error',
-      'unused-imports/no-unused-vars': [
-        'warn',
-        {
-          vars: 'all',
-          varsIgnorePattern: '^_',
-          args: 'after-used',
-          argsIgnorePattern: '^_',
-        },
-      ],
     },
   },
 );

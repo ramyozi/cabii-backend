@@ -65,13 +65,11 @@ export class User {
   // === Profiles ===
   @OneToOne(() => DriverProfile, (driver) => driver.user, {
     cascade: true,
-    eager: true,
   })
   driverProfile?: DriverProfile;
 
   @OneToOne(() => CustomerProfile, (customer) => customer.user, {
     cascade: true,
-    eager: true,
   })
   customerProfile?: CustomerProfile;
 

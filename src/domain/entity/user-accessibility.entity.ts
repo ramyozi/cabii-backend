@@ -20,7 +20,7 @@ export class UserAccessibility {
   })
   user: User;
 
-  @ManyToOne(() => AccessibilityFeature, { eager: true })
+  @ManyToOne(() => AccessibilityFeature)
   feature: AccessibilityFeature;
 
   @ApiProperty({ type: () => Date })

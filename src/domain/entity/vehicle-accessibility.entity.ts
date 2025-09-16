@@ -20,7 +20,7 @@ export class VehicleAccessibility {
   })
   vehicle: Vehicle;
 
-  @ManyToOne(() => AccessibilityFeature, { eager: true })
+  @ManyToOne(() => AccessibilityFeature)
   feature: AccessibilityFeature;
 
   @ApiProperty({ type: () => Date })

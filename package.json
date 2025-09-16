@@ -20,6 +20,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "fixtures:load": "fixtures-ts-node-commonjs load src/fixtures -d ./src/infrastructure/app-data-source.ts --ignoreDecorators --debug",
     "typeorm": "ts-node --project tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/infrastructure/app-data-source.ts",
     "typeorm-prod": "node -r ts-node/register ./node_modules/typeorm/cli.js -d ./dist/src/infrastructure/app-data-source.js",
     "migration:dev": "node -r ts-node/register src/scripts/migration-dev.ts ",
@@ -27,6 +28,7 @@
     "db:init": "pnpm run db:create && pnpm run typeorm-prod migration:run"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -80,6 +82,7 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "typeorm-fixtures-cli": "^4.1.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },

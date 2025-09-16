@@ -33,6 +33,10 @@ export class User {
   @Column('varchar', { length: 255, unique: true, nullable: false })
   email: string;
 
+  @ApiProperty()
+  @Column('varchar', { length: 20, unique: true, nullable: false })
+  phone: string;
+
   @Exclude()
   @Column('varchar', { length: 255, nullable: true })
   password?: string;

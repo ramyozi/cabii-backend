@@ -22,6 +22,10 @@ export class UserCreateRequestDto {
 
   @ApiProperty()
   @IsString()
+  phone: string;
+
+  @ApiProperty()
+  @IsString()
   password: string;
 
   @ApiProperty({

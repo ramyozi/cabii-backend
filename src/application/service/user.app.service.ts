@@ -33,6 +33,7 @@ export class UserAppService {
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;
     user.email = dto.email;
+    user.phone = dto.phone;
     user.password = this.authService.hashPassword(dto.password);
 
     return await this.userRepository.save(user);

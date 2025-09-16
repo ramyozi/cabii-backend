@@ -1,0 +1,22 @@
+entity: VehicleCategory
+items:
+  sedan:
+    name: 'Sedan'
+    description: 'Standard car, 4 seats'
+    icon: 'sedan-icon.png'
+    maxPassengers: 4
+    costPerKm: 1.5
+
+  suv:
+    name: 'SUV'
+    description: 'Large vehicle, 6 seats'
+    icon: 'suv-icon.png'
+    maxPassengers: 6
+    costPerKm: 2.0
+
+  wheelchairVan:
+    name: 'Wheelchair Van'
+    description: 'Supports wheelchair users'
+    icon: 'wheelchair-van-icon.png'
+    maxPassengers: 4
+    costPerKm: 2.5

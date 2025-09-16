@@ -2,13 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Driver } from './driver.entity';
+import { DriverProfile } from './driver-profile.entity';
 import { VehicleAccessibility } from './vehicle-accessibility.entity';
 import { VehicleCategory } from './vehicle-category.entity';
 
@@ -19,8 +20,9 @@ export class Vehicle {
   id: string;
 
   @ApiProperty()
-  @ManyToOne(() => Driver, (driver) => driver.vehicles)
-  driver: Driver;
+  @ManyToOne(() => DriverProfile, (driver) => driver.vehicles)
+  @JoinColumn({ name: 'driver_id' })
+  driver: DriverProfile;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 255 })
@@ -44,6 +46,7 @@ export class Vehicle {
 
   @ApiProperty()
   @OneToOne(() => VehicleCategory)
+  @JoinColumn()
   category: VehicleCategory;
 
   @OneToMany(() => VehicleAccessibility, (va) => va.vehicle, { cascade: true })

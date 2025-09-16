@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Driver } from './driver.entity';
+import { DriverProfile } from './driver-profile.entity';
 import { CommissionTypeEnum } from '../enums/comission-type.enum';
 
 /**
@@ -52,10 +52,10 @@ export class DriverCommission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Driver, (driver) => driver.commissions, {
+  @ManyToOne(() => DriverProfile, (driver) => driver.commissions, {
     onDelete: 'CASCADE',
   })
-  driver: Driver;
+  driver: DriverProfile;
 
   @ApiProperty({ enum: CommissionTypeEnum })
   @Column({ type: 'enum', enum: CommissionTypeEnum })

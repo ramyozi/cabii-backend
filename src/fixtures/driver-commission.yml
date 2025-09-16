@@ -1,0 +1,15 @@
+entity: DriverCommission
+items:
+  commission1:
+    driver: '@driver1'
+    type: 'PERCENTAGE'
+    percentage: 15.0
+    fixedFee: null
+    active: true
+
+  commission2:
+    driver: '@driver2'
+    type: 'FIXED'
+    percentage: null
+    fixedFee: 2.5
+    active: true

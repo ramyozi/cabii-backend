@@ -1,0 +1,28 @@
+entity: Vehicle
+items:
+  vehicle1:
+    driver: '@driver1'
+    brand: 'Toyota'
+    model: 'Corolla'
+    plate: 'ABC-1234'
+    color: 'Red'
+    chassisNumber: 'CHS-001'
+    category: '@sedan'
+
+  vehicle2:
+    driver: '@driver1'
+    brand: 'Mercedes'
+    model: 'V-Class'
+    plate: 'XYZ-5678'
+    color: 'Black'
+    chassisNumber: 'CHS-002'
+    category: '@suv'
+
+  vehicle3:
+    driver: '@driver2'
+    brand: 'Volkswagen'
+    model: 'Transporter'
+    plate: 'VWX-9012'
+    color: 'White'
+    chassisNumber: 'CHS-003'
+    category: '@wheelchairVan'

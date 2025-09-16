@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Driver } from './driver.entity';
+import { DriverProfile } from './driver-profile.entity';
 import { DriverDocumentStatusEnum } from '../enums/driver-document-status.enum';
 import { DriverDocumentTypeEnum } from '../enums/driver-document-type.enum';
 
@@ -39,10 +39,10 @@ export class DriverDocument {
   expiryDate?: Date;
 
   @ApiProperty()
-  @ManyToOne(() => Driver, (driver) => driver.documents, {
+  @ManyToOne(() => DriverProfile, (driver) => driver.documents, {
     onDelete: 'CASCADE',
   })
-  driver: Driver;
+  driver: DriverProfile;
 
   @ApiProperty({ type: () => Date })
   @CreateDateColumn({ type: 'timestamptz' })

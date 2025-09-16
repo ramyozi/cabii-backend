@@ -2,9 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 
 import { DriverCommission } from './driver-commission.entity';
@@ -29,24 +31,23 @@ export class DriverProfile {
   @ApiProperty()
   @OneToMany(() => Vehicle, (vehicle) => vehicle.driver, {
     cascade: true,
-    eager: true,
   })
   vehicles: Vehicle[];
 
   @ApiProperty()
   @OneToMany(() => DriverDocument, (document) => document.driver, {
     cascade: true,
-    eager: true,
   })
   documents: DriverDocument[];
 
   @ApiProperty()
   @OneToMany(() => DriverCommission, (commission) => commission.driver, {
     cascade: true,
-    eager: true,
   })
   commissions: DriverCommission[];
 
-  @OneToOne(() => User, (user) => user.driverProfile, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  @Unique(['user'])
   user: User;
 }

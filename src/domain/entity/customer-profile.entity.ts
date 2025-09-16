@@ -1,4 +1,10 @@
-import { Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 
 import { User } from './user.entity';
 
@@ -7,6 +13,8 @@ export class CustomerProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => User, (user) => user.customerProfile, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  @Unique(['user'])
   user: User;
 }

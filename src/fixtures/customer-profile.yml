@@ -1,6 +1,7 @@
 entity: CustomerProfile
 items:
   customer1:
-    user: user1
+    user: "@user1"
+
   customer2:
-    user: user3
+    user: "@user3"

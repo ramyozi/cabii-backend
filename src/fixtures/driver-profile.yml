@@ -1,10 +1,11 @@
 entity: DriverProfile
 items:
   driver1:
-    user: user2
+    user: "@user2"
     isAvailable: true
-    driverLicenseSerial: 'UFYT-FUYG-ULKH-KUGH'
+    driverLicenseSerial: "UFYT-FUYG-ULKH-KUGH"
+
   driver2:
-    user: user3
+    user: "@user3"
     isAvailable: false
-    driverLicenseSerial: 'HFHY-TDTE-RSUK-HLOH'
+    driverLicenseSerial: "HFHY-TDTE-RSUK-HLOH"

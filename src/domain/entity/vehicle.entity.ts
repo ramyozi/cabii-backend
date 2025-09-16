@@ -3,11 +3,13 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Driver } from './driver.entity';
+import { VehicleAccessibility } from './vehicle-accessibility.entity';
 import { VehicleCategory } from './vehicle-category.entity';
 
 @Entity()
@@ -43,4 +45,7 @@ export class Vehicle {
   @ApiProperty()
   @OneToOne(() => VehicleCategory)
   category: VehicleCategory;
+
+  @OneToMany(() => VehicleAccessibility, (va) => va.vehicle, { cascade: true })
+  accessibilityOptions: VehicleAccessibility[];
 }

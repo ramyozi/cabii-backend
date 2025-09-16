@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 
 import { AuthSession } from './auth-session.entity';
+import { UserAccessibility } from './user-accessibility.entity';
 import { RoleEnum } from '../enums/role.enum';
 
 @Entity()
@@ -63,4 +64,7 @@ export class User {
     eager: false,
   })
   authSessions: AuthSession[];
+
+  @OneToMany(() => UserAccessibility, (ua) => ua.user, { cascade: true })
+  accessibilityPreferences: UserAccessibility[];
 }

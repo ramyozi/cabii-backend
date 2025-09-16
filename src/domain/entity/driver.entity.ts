@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, OneToMany } from 'typeorm';
 
+import { DriverCommission } from './driver-commission.entity';
 import { DriverDocument } from './driver-document.entity';
 import { User } from './user.entity';
 import { Vehicle } from './vehicle.entity';
@@ -24,4 +25,7 @@ export class Driver extends User {
     cascade: true,
   })
   documents: DriverDocument[];
+
+  @OneToMany(() => DriverCommission, (commission) => commission.driver)
+  commissions: DriverCommission[];
 }

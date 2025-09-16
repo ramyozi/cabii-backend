@@ -1,0 +1,22 @@
+entity: User
+items:
+  user1:
+    firstname: 'Ali'
+    lastname: 'Baba'
+    login: 'alibaba'
+    email: 'nCfJi@example.com'
+    phone: '+123456789'
+    role: 'USER'
+    __call:
+      setPassword:
+        - foo
+  user2:
+    firstname: 'Khalid'
+    lastname: 'Shahzad'
+    login: 'khalidshahzad'
+    email: 'nXGTi@example.com'
+    phone: '+123466789'
+    role: 'USER'
+    __call:
+      setPassword:
+        - foo

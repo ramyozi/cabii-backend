@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { Driver } from './driver.entity';
+import { VehicleCategory } from './vehicle-category.entity';
 
 @Entity()
 export class Vehicle {
@@ -32,4 +39,8 @@ export class Vehicle {
   @ApiProperty()
   @Column({ type: 'varchar', length: 255 })
   chassisNumber: string;
+
+  @ApiProperty()
+  @OneToOne(() => VehicleCategory)
+  category: VehicleCategory;
 }

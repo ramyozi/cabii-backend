@@ -21,11 +21,13 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "fixtures:load": "fixtures-ts-node-commonjs load src/fixtures -d ./src/infrastructure/app-data-source.ts --ignoreDecorators --debug",
+    "db:clear": "node -r ts-node/register ./src/scripts/clear-db.ts",
+    "db:clear-load": "yarn run db:clear && yarn run fixtures:load",
     "typeorm": "ts-node --project tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ./src/infrastructure/app-data-source.ts",
     "typeorm-prod": "node -r ts-node/register ./node_modules/typeorm/cli.js -d ./dist/src/infrastructure/app-data-source.js",
     "migration:dev": "node -r ts-node/register src/scripts/migration-dev.ts ",
     "db:create": "node -r ts-node/register ./node_modules/typeorm-extension/bin/cli.cjs db:create -d ./dist/src/infrastructure/app-data-source.js -s no",
-    "db:init": "pnpm run db:create && pnpm run typeorm-prod migration:run"
+    "db:init": "yarn run db:create && yarn run typeorm-prod migration:run"
   },
   "dependencies": {
     "@faker-js/faker": "^10.0.0",

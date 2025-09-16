@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { DriverCommission } from './driver-commission.entity';
 import { DriverDocument } from './driver-document.entity';
@@ -7,7 +13,11 @@ import { User } from './user.entity';
 import { Vehicle } from './vehicle.entity';
 
 @Entity()
-export class Driver extends User {
+export class DriverProfile {
+  @ApiProperty()
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @ApiProperty()
   @Column({ type: 'boolean', default: false })
   isAvailable: boolean;
@@ -17,15 +27,26 @@ export class Driver extends User {
   driverLicenseSerial: string;
 
   @ApiProperty()
-  @OneToMany(() => Vehicle, (vehicle) => vehicle.driver)
+  @OneToMany(() => Vehicle, (vehicle) => vehicle.driver, {
+    cascade: true,
+    eager: true,
+  })
   vehicles: Vehicle[];
 
   @ApiProperty()
   @OneToMany(() => DriverDocument, (document) => document.driver, {
     cascade: true,
+    eager: true,
   })
   documents: DriverDocument[];
 
-  @OneToMany(() => DriverCommission, (commission) => commission.driver)
+  @ApiProperty()
+  @OneToMany(() => DriverCommission, (commission) => commission.driver, {
+    cascade: true,
+    eager: true,
+  })
   commissions: DriverCommission[];
+
+  @OneToOne(() => User, (user) => user.driverProfile, { onDelete: 'CASCADE' })
+  user: User;
 }

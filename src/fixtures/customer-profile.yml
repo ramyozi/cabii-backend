@@ -1,0 +1,7 @@
+entity: CustomerProfile
+items:
+  customer1:
+    user: "@user1"
+
+  customer2:
+    user: "@user3"

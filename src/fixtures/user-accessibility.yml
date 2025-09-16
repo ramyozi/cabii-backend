@@ -1,0 +1,13 @@
+entity: UserAccessibility
+items:
+  ua1:
+    user: '@user1'
+    feature: '@wheelchair'
+
+  ua2:
+    user: '@user2'
+    feature: '@guideDog'
+
+  ua3:
+    user: '@user3'
+    feature: '@hearingAid'

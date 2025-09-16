@@ -4,19 +4,31 @@ items:
     firstname: 'Ali'
     lastname: 'Baba'
     login: 'alibaba'
-    email: 'nCfJi@example.com'
+    email: 'alibaba@example.com'
     phone: '+123456789'
     role: 'USER'
     __call:
       setPassword:
-        - foo
+        - 'foo'
+
   user2:
     firstname: 'Khalid'
     lastname: 'Shahzad'
     login: 'khalidshahzad'
-    email: 'nXGTi@example.com'
+    email: 'khalidshahzad@example.com'
     phone: '+123466789'
     role: 'USER'
     __call:
       setPassword:
-        - foo
+        - 'foo'
+
+  user3:
+    firstname: 'Layla'
+    lastname: 'Mansour'
+    login: 'layla.mansour'
+    email: 'layla.mansour@example.com'
+    phone: '+123457789'
+    role: 'USER'
+    __call:
+      setPassword:
+        - 'foo'

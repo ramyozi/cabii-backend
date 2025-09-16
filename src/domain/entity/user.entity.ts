@@ -6,15 +6,20 @@ import {
   DeleteDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { AuthSession } from './auth-session.entity';
+import { CustomerProfile } from './customer-profile.entity';
+import { DriverProfile } from './driver-profile.entity';
+import { UserAccessibility } from './user-accessibility.entity';
 import { RoleEnum } from '../enums/role.enum';
 
 @Entity()
 export class User {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -57,9 +62,23 @@ export class User {
   @Column('enum', { enum: RoleEnum, default: RoleEnum.User })
   role: RoleEnum;
 
+  // === Profiles ===
+  @OneToOne(() => DriverProfile, (driver) => driver.user, {
+    cascade: true,
+  })
+  driverProfile?: DriverProfile;
+
+  @OneToOne(() => CustomerProfile, (customer) => customer.user, {
+    cascade: true,
+  })
+  customerProfile?: CustomerProfile;
+
   @Exclude()
   @OneToMany(() => AuthSession, (authSession) => authSession.user, {
     eager: false,
   })
   authSessions: AuthSession[];
+
+  @OneToMany(() => UserAccessibility, (ua) => ua.user, { cascade: true })
+  accessibilityPreferences: UserAccessibility[];
 }

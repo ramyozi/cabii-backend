@@ -1,0 +1,16 @@
+entity: AccessibilityFeature
+items:
+  wheelchair:
+    name: 'Wheelchair'
+    description: 'Supports wheelchair users'
+    icon: 'wheelchair-icon.png'
+
+  guideDog:
+    name: 'Guide Dog'
+    description: 'Supports visually impaired users'
+    icon: 'guide-dog-icon.png'
+
+  hearingAid:
+    name: 'Hearing Aid'
+    description: 'Supports hearing-impaired users'
+    icon: 'hearing-aid-icon.png'

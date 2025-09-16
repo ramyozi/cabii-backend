@@ -1,0 +1,9 @@
+entity: VehicleAccessibility
+items:
+  va1:
+    vehicle: '@vehicle3'
+    feature: '@wheelchair'
+
+  va2:
+    vehicle: '@vehicle3'
+    feature: '@hearingAid'

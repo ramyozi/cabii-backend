@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { AuthSession } from '../../domain/entity/auth-session.entity';
+import { AuthSessionNotFoundException } from '../../domain/exception/auth/auth-session-not-found.exception';
 
 @Injectable()
 export class AuthSessionRepository extends Repository<AuthSession> {
@@ -25,7 +26,7 @@ export class AuthSessionRepository extends Repository<AuthSession> {
       .getOne();
 
     if (!authSession) {
-      throw new NotFoundException(
+      throw new AuthSessionNotFoundException(
         `AuthSession with refreshToken ${refreshToken} not found`,
       );
     }

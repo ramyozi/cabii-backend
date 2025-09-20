@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { User } from '../../domain/entity/user.entity';
+import { UserNotFoundException } from '../../domain/exception/user/user-not-found.exception';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -31,7 +32,7 @@ export class UserRepository extends Repository<User> {
     const user = await query.getOne();
 
     if (!user) {
-      throw new NotFoundException(`User with Id ${userId} not found`);
+      throw new UserNotFoundException(`User with Id ${userId} not found`);
     }
 
     return user;
@@ -46,7 +47,7 @@ export class UserRepository extends Repository<User> {
     const user = await query.getOne();
 
     if (!user) {
-      throw new NotFoundException(`User with Id ${loginOrEmail} not found`);
+      throw new UserNotFoundException(`User with Id ${loginOrEmail} not found`);
     }
 
     return user;

@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { DriverProfile } from '../../domain/entity/driver-profile.entity';
+import { DriverProfileNotFoundException } from '../../domain/exception/driver/driver-profile-not-found.exception';
 
 @Injectable()
 export class DriverProfileRepository extends Repository<DriverProfile> {
@@ -34,7 +35,7 @@ export class DriverProfileRepository extends Repository<DriverProfile> {
     const driverProfile = await query.getOne();
 
     if (!driverProfile) {
-      throw new NotFoundException(
+      throw new DriverProfileNotFoundException(
         `DriverProfile with Id ${driverProfileId} not found`,
       );
     }
@@ -51,7 +52,7 @@ export class DriverProfileRepository extends Repository<DriverProfile> {
     const driverProfile = await query.getOne();
 
     if (!driverProfile) {
-      throw new NotFoundException(
+      throw new DriverProfileNotFoundException(
         `DriverProfile with Id ${loginOrEmail} not found`,
       );
     }

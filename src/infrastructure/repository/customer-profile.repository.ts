@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { CustomerProfile } from '../../domain/entity/customer-profile.entity';
+import { CustomerProfileNotFoundException } from '../../domain/exception/customer/customer-profile-not-found.exception';
 
 @Injectable()
 export class CustomerProfileRepository extends Repository<CustomerProfile> {
@@ -34,7 +35,7 @@ export class CustomerProfileRepository extends Repository<CustomerProfile> {
     const customerProfile = await query.getOne();
 
     if (!customerProfile) {
-      throw new NotFoundException(
+      throw new CustomerProfileNotFoundException(
         `CustomerProfile with Id ${customerProfileId} not found`,
       );
     }
@@ -51,7 +52,7 @@ export class CustomerProfileRepository extends Repository<CustomerProfile> {
     const customerProfile = await query.getOne();
 
     if (!customerProfile) {
-      throw new NotFoundException(
+      throw new CustomerProfileNotFoundException(
         `CustomerProfile with Id ${loginOrEmail} not found`,
       );
     }

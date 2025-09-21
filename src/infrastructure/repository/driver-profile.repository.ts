@@ -26,12 +26,12 @@ export class DriverProfileRepository extends Repository<DriverProfile> {
   }
 
   async getOneById(driverProfileId: string) {
-    const query = this.createQueryBuilder('driverProfile').where(
-      'driverProfile.id = :driverProfileId',
-      {
+    const query = this.createQueryBuilder('driverProfile')
+      .leftJoinAndSelect('driverProfile.vehicles', 'vehicle')
+      .leftJoinAndSelect('vehicle.category', 'category')
+      .where('driverProfile.id = :driverProfileId', {
         driverProfileId,
-      },
-    );
+      });
     const driverProfile = await query.getOne();
 
     if (!driverProfile) {

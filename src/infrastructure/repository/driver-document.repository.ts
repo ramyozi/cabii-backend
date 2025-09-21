@@ -36,10 +36,10 @@ export class DriverDocumentRepository extends Repository<DriverDocument> {
   async getAllByDriverId(
     driverId: string,
   ): Promise<[DriverDocument[], number]> {
-    const qb = this.createQueryBuilder('driverDocument').where(
-      'driverDocument.driverId = :driverId',
-      { driverId },
-    );
+    const qb = this.createQueryBuilder('driverDocument')
+      .innerJoin('driverDocument.driver', 'driver')
+      .where('driver.id = :driverId', { driverId })
+      .orderBy('driverDocument.createdAt', 'DESC');
 
     return await qb.getManyAndCount();
   }

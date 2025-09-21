@@ -32,10 +32,23 @@ export class UserAppService {
     user.role = dto.role || RoleEnum.User;
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;
+
+    this.isEmailAvailable(dto.email);
     user.email = dto.email;
+
+    this.isPhoneNumberAvailable(dto.phone);
+
     user.phone = dto.phone;
     user.password = this.authService.hashPassword(dto.password);
 
     return await this.userRepository.save(user);
+  }
+
+  async isEmailAvailable(email: string) {
+    return await this.userRepository.isEmailAvailable(email);
+  }
+
+  async isPhoneNumberAvailable(phone: string) {
+    return await this.userRepository.isPhoneNumberAvailable(phone);
   }
 }

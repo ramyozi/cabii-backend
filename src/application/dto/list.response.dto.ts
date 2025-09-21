@@ -4,7 +4,7 @@ import { BaseResponseDto } from './base.response.dto';
 
 export class ListResponseDto extends BaseResponseDto {
   @ApiProperty()
-  data: unknown[];
+  declare data: unknown[];
 
   @ApiProperty()
   totalItems: number;

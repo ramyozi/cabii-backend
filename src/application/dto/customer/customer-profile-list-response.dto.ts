@@ -5,5 +5,5 @@ import { ListResponseDto } from '../list.response.dto';
 
 export class CustomerProfileListResponseDto extends ListResponseDto {
   @ApiProperty({ type: [CustomerProfile] })
-  data: CustomerProfile[];
+  declare data: CustomerProfile[];
 }

@@ -5,5 +5,5 @@ import { ListResponseDto } from '../list.response.dto';
 
 export class DriverProfileListResponseDto extends ListResponseDto {
   @ApiProperty({ type: [DriverProfile] })
-  data: DriverProfile[];
+  declare data: DriverProfile[];
 }

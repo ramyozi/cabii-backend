@@ -34,7 +34,6 @@ export class DriverProfile {
   })
   vehicles: Vehicle[];
 
-  @ApiProperty()
   @OneToMany(() => DriverDocument, (document) => document.driver, {
     cascade: true,
   })

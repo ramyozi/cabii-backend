@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { User } from '../../domain/entity/user.entity';
-import { EmailNotAvailableFoundException } from '../../domain/exception/user/email-not-available-found.exception';
-import { PhoneNotAvailableFoundException } from '../../domain/exception/user/phone-not-available-found.exception';
 import { UserNotFoundException } from '../../domain/exception/user/user-not-found.exception';
 
 @Injectable()
@@ -55,31 +53,19 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async isEmailAvailable(email: string) {
-    const query = this.createQueryBuilder('user').where('user.email = :email', {
-      email,
-    });
+  async isEmailAvailable(email: string): Promise<boolean> {
+    const count = await this.createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .getCount();
 
-    if ((await query.getCount()) > 0) {
-      throw new EmailNotAvailableFoundException(
-        `Email ${email} is already used`,
-      );
-    }
-
-    return true;
+    return count === 0;
   }
 
   async isPhoneNumberAvailable(phone: string) {
-    const query = this.createQueryBuilder('user').where('user.phone = :phone', {
-      phone,
-    });
+    const count = await this.createQueryBuilder('user')
+      .where('user.phone = :phone', { phone })
+      .getCount();
 
-    if ((await query.getCount()) > 0) {
-      throw new PhoneNotAvailableFoundException(
-        `Phone number ${phone} is already used`,
-      );
-    }
-
-    return true;
+    return count === 0;
   }
 }

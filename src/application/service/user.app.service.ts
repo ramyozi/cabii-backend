@@ -49,11 +49,11 @@ export class UserAppService {
     return await this.userRepository.save(user);
   }
 
-  async isEmailAvailable(email: string) {
-    return await this.userRepository.isEmailAvailable(email);
+  async isEmailAvailable(email: string): Promise<boolean> {
+    return this.userRepository.isEmailAvailable(email);
   }
 
-  async isPhoneNumberAvailable(phone: string) {
+  async isPhoneNumberAvailable(phone: string): Promise<boolean> {
     return await this.userRepository.isPhoneNumberAvailable(phone);
   }
 }

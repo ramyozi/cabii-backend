@@ -128,6 +128,7 @@ export class UserController {
 
     return {
       statusCode: HttpStatus.OK,
+      message: isAvailable ? 'EMAIL_AVAILABLE' : 'EMAIL_NOT_AVAILABLE',
       data: { isAvailable },
     };
   }
@@ -146,6 +147,9 @@ export class UserController {
 
     return {
       statusCode: HttpStatus.OK,
+      message: isAvailable
+        ? 'PHONE_NUMBER_AVAILABLE'
+        : 'PHONE_NUMBER_NOT_AVAILABLE',
       data: { isAvailable },
     };
   }

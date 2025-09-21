@@ -49,6 +49,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.7.2",
+    "multer": "^2.0.2",
     "nanoid": "^5.1.5",
     "pg": "^8.16.0",
     "prompts": "^2.4.2",

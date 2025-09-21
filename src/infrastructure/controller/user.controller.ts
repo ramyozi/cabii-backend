@@ -19,6 +19,7 @@ import { instanceToPlain } from 'class-transformer';
 import Express from 'express';
 
 import { UserCreateRequestDto } from '../../application/dto/user/user-create-request.dto';
+import { UserListResponseDto } from '../../application/dto/user/user-list-response.dto';
 import { UserResponseDto } from '../../application/dto/user/user-response.dto';
 import { UserAppService } from '../../application/service/user.app.service';
 import { RoleEnum } from '../../domain/enums/role.enum';
@@ -34,6 +35,7 @@ export class UserController {
   @ApiOperation({ summary: 'Get all users.' })
   @ApiBearerAuth('JWT-auth')
   @ApiResponse({
+    type: UserListResponseDto,
     status: HttpStatus.OK,
   })
   @Roles([RoleEnum.Admin])
@@ -109,6 +111,42 @@ export class UserController {
         strategy: 'exposeAll',
         groups: ['default'],
       }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Check email availability.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Email availability.',
+  })
+  @Get('check-email/:email')
+  async checkEmailAvailability(
+    @Req() req: Request,
+    @Param('email') email: string,
+  ) {
+    const isAvailable = await this.userAppService.isEmailAvailable(email);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: { isAvailable },
+    };
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Phone number availability.',
+  })
+  @ApiOperation({ summary: 'Check phone number availability.' })
+  @Get('check-phone/:phone')
+  async checkPhoneNumberAvailability(
+    @Req() req: Request,
+    @Param('phone') phone: string,
+  ) {
+    const isAvailable = await this.userAppService.isPhoneNumberAvailable(phone);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: { isAvailable },
     };
   }
 }

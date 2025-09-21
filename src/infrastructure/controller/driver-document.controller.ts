@@ -101,7 +101,7 @@ export class DriverDocumentController {
     status: HttpStatus.OK,
     description: 'The document has been approved.',
   })
-  @Patch('approve/:id')
+  @Patch('approve/:documentId')
   async approveDriverDocument(
     @Req() req: Express.Request,
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
@@ -124,7 +124,7 @@ export class DriverDocumentController {
     status: HttpStatus.OK,
     description: 'The document has been denied.',
   })
-  @Patch('deny/:id')
+  @Patch('deny/:documentId')
   async denyDriverDocument(
     @Req() req: Express.Request,
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
@@ -147,7 +147,7 @@ export class DriverDocumentController {
     status: HttpStatus.OK,
     description: 'The driver document details.',
   })
-  @Get(':id')
+  @Get(':documentId')
   async getDriverDocumentById(
     @Req() req: Express.Request,
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
@@ -207,7 +207,7 @@ export class DriverDocumentController {
     status: HttpStatus.OK,
     description: 'The document has been updated.',
   })
-  @Patch(':id')
+  @Patch(':documentId')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({

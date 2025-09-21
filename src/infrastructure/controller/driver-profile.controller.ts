@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Req,
   ValidationPipe,
@@ -55,12 +56,13 @@ export class DriverProfileController {
     status: HttpStatus.OK,
     description: 'DriverProfile.',
   })
-  @Get(':driverProfileId')
+  @Get(':driverId')
   async getDriverProfileById(
     @Req() req: Express.Request,
-    @Param('id') id: string,
+    @Param('driverId', new ParseUUIDPipe()) driverId: string,
   ) {
-    const driverProfile = await this.driverProfileAppService.getOneById(id);
+    const driverProfile =
+      await this.driverProfileAppService.getOneById(driverId);
 
     return {
       statusCode: HttpStatus.OK,

@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Req,
   ValidationPipe,
@@ -55,12 +56,13 @@ export class CustomerProfileController {
     status: HttpStatus.OK,
     description: 'CustomerProfile.',
   })
-  @Get(':customerProfileId')
+  @Get(':customerId')
   async getCustomerProfileById(
     @Req() req: Express.Request,
-    @Param('id') id: string,
+    @Param('customerId', new ParseUUIDPipe()) customerId: string,
   ) {
-    const customerProfile = await this.customerProfileAppService.getOneById(id);
+    const customerProfile =
+      await this.customerProfileAppService.getOneById(customerId);
 
     return {
       statusCode: HttpStatus.OK,

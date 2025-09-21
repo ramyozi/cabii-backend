@@ -23,8 +23,8 @@ import { CustomerProfileListResponseDto } from '../../application/dto/customer/c
 import { CustomerProfileResponseDto } from '../../application/dto/customer/customer-profile-response.dto';
 import { CustomerProfileAppService } from '../../application/service/customer-profile.app.service';
 
-@ApiTags('customerProfile')
-@Controller('customerProfile')
+@ApiTags('customer-profile')
+@Controller('customer-profile')
 @ApiBearerAuth('JWT-auth')
 export class CustomerProfileController {
   constructor(

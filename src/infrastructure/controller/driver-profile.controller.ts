@@ -23,8 +23,8 @@ import { DriverProfileListResponseDto } from '../../application/dto/driver/drive
 import { DriverProfileResponseDto } from '../../application/dto/driver/driver-profile-response.dto';
 import { DriverProfileAppService } from '../../application/service/driver-profile.app.service';
 
-@ApiTags('driverProfile')
-@Controller('driverProfile')
+@ApiTags('driver-profile')
+@Controller('driver-profile')
 @ApiBearerAuth('JWT-auth')
 export class DriverProfileController {
   constructor(

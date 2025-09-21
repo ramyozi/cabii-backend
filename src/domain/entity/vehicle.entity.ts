@@ -5,7 +5,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -19,7 +18,6 @@ export class Vehicle {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty()
   @ManyToOne(() => DriverProfile, (driver) => driver.vehicles)
   @JoinColumn({ name: 'driver_id' })
   driver: DriverProfile;
@@ -44,9 +42,8 @@ export class Vehicle {
   @Column({ type: 'varchar', length: 255 })
   chassisNumber: string;
 
-  @ApiProperty()
-  @OneToOne(() => VehicleCategory)
-  @JoinColumn()
+  @ManyToOne(() => VehicleCategory, { nullable: false })
+  @JoinColumn({ name: 'category_id' })
   category: VehicleCategory;
 
   @OneToMany(() => VehicleAccessibility, (va) => va.vehicle, { cascade: true })

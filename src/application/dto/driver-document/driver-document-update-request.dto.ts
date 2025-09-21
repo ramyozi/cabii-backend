@@ -5,7 +5,8 @@ export class DriverDocumentUpdateRequestDto {
   @ApiProperty({ description: 'New file path for the document' })
   @IsString()
   @IsNotEmpty()
-  filePath: string;
+  @IsOptional()
+  filePath?: string;
 
   @ApiProperty({
     description: 'Optional new expiry date for the document',

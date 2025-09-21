@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { DriverDocument } from '../../domain/entity/driver-document.entity';
 import { DriverDocumentStatusEnum } from '../../domain/enums/driver-document-status.enum';
+import { validateExpiryDate } from '../../infrastructure/common/validate-expiry-date';
 import { DriverDocumentRepository } from '../../infrastructure/repository/driver-document.repository';
 import { DriverProfileRepository } from '../../infrastructure/repository/driver-profile.repository';
 import { ListBuilder, ListInterface } from '../common/list';
@@ -39,9 +40,6 @@ export class DriverDocumentAppService {
     doc.fileUrl = dto.filePath;
     doc.type = dto.documentType;
     doc.status = DriverDocumentStatusEnum.PENDING;
-    if (dto.expiryDate) {
-      doc.expiryDate = dto.expiryDate;
-    }
 
     return await this.driverDocumentRepository.save(doc);
   }
@@ -50,6 +48,7 @@ export class DriverDocumentAppService {
     const doc = await this.driverDocumentRepository.getOneById(documentId);
 
     doc.status = DriverDocumentStatusEnum.VALIDATED;
+    doc.expiryDate = validateExpiryDate(doc.type, doc.expiryDate);
 
     const updatedDoc = await this.driverDocumentRepository.save(doc);
 

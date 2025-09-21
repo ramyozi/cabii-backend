@@ -19,7 +19,7 @@ export class UserRepository extends Repository<User> {
     super(User, entityManager || dataSource!.createEntityManager());
   }
 
-  async getAll() {
+  async getAll(): Promise<[User[], number]> {
     const query = this.createQueryBuilder('user');
 
     return await query.getManyAndCount();
@@ -51,5 +51,21 @@ export class UserRepository extends Repository<User> {
     }
 
     return user;
+  }
+
+  async isEmailAvailable(email: string): Promise<boolean> {
+    const count = await this.createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .getCount();
+
+    return count === 0;
+  }
+
+  async isPhoneNumberAvailable(phone: string) {
+    const count = await this.createQueryBuilder('user')
+      .where('user.phone = :phone', { phone })
+      .getCount();
+
+    return count === 0;
   }
 }

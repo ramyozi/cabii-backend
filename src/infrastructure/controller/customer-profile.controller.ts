@@ -18,6 +18,7 @@ import { instanceToPlain } from 'class-transformer';
 import Express from 'express';
 
 import { CustomerProfileCreateRequestDto } from '../../application/dto/customer/customer-profile-create-request.dto';
+import { CustomerProfileListResponseDto } from '../../application/dto/customer/customer-profile-list-response.dto';
 import { CustomerProfileResponseDto } from '../../application/dto/customer/customer-profile-response.dto';
 import { CustomerProfileAppService } from '../../application/service/customer-profile.app.service';
 
@@ -31,6 +32,7 @@ export class CustomerProfileController {
 
   @ApiOperation({ summary: 'Get all customerProfiles.' })
   @ApiResponse({
+    type: CustomerProfileListResponseDto,
     status: HttpStatus.OK,
   })
   @Get()

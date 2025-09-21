@@ -18,6 +18,7 @@ import { instanceToPlain } from 'class-transformer';
 import Express from 'express';
 
 import { DriverProfileCreateRequestDto } from '../../application/dto/driver/driver-profile-create-request.dto';
+import { DriverProfileListResponseDto } from '../../application/dto/driver/driver-profile-list-response.dto';
 import { DriverProfileResponseDto } from '../../application/dto/driver/driver-profile-response.dto';
 import { DriverProfileAppService } from '../../application/service/driver-profile.app.service';
 
@@ -31,6 +32,7 @@ export class DriverProfileController {
 
   @ApiOperation({ summary: 'Get all driverProfiles.' })
   @ApiResponse({
+    type: DriverProfileListResponseDto,
     status: HttpStatus.OK,
   })
   @Get()

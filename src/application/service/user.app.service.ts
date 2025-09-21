@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { User } from '../../domain/entity/user.entity';
 import { RoleEnum } from '../../domain/enums/role.enum';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
+import { ListBuilder, ListInterface } from '../common/list';
 import { UserCreateRequestDto } from '../dto/user/user-create-request.dto';
 
 @Injectable()
@@ -13,8 +14,12 @@ export class UserAppService {
     private readonly authService: AuthService,
   ) {}
 
-  async getList() {
-    return await this.userRepository.getAll();
+  async getList(): Promise<ListInterface<User>> {
+    const [users, usersCount] = await this.userRepository.getAll();
+
+    const list = new ListBuilder(users, usersCount);
+
+    return list.build();
   }
 
   async getOneById(userId: string) {
@@ -32,10 +37,23 @@ export class UserAppService {
     user.role = dto.role || RoleEnum.User;
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;
+
+    this.isEmailAvailable(dto.email);
     user.email = dto.email;
+
+    this.isPhoneNumberAvailable(dto.phone);
+
     user.phone = dto.phone;
     user.password = this.authService.hashPassword(dto.password);
 
     return await this.userRepository.save(user);
+  }
+
+  async isEmailAvailable(email: string): Promise<boolean> {
+    return this.userRepository.isEmailAvailable(email);
+  }
+
+  async isPhoneNumberAvailable(phone: string): Promise<boolean> {
+    return await this.userRepository.isPhoneNumberAvailable(phone);
   }
 }

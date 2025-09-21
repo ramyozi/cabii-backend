@@ -28,7 +28,6 @@ export class DriverProfile {
   @Column({ type: 'varchar', length: 255 })
   driverLicenseSerial: string;
 
-  @ApiProperty()
   @OneToMany(() => Vehicle, (vehicle) => vehicle.driver, {
     cascade: true,
   })
@@ -39,7 +38,6 @@ export class DriverProfile {
   })
   documents: DriverDocument[];
 
-  @ApiProperty()
   @OneToMany(() => DriverCommission, (commission) => commission.driver, {
     cascade: true,
   })

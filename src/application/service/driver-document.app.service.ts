@@ -7,6 +7,7 @@ import { DriverDocumentRepository } from '../../infrastructure/repository/driver
 import { DriverProfileRepository } from '../../infrastructure/repository/driver-profile.repository';
 import { ListBuilder, ListInterface } from '../common/list';
 import { DriverDocumentCreateRequestDto } from '../dto/driver-document/driver-document-create-request.dto';
+import { DriverDocumentUpdateRequestDto } from '../dto/driver-document/driver-document-update-request.dto';
 
 @Injectable()
 export class DriverDocumentAppService {
@@ -65,5 +66,20 @@ export class DriverDocumentAppService {
 
     // TODO: send notification to driver about rejection
     return updatedDoc;
+  }
+
+  async updateDocument(id: string, dto: DriverDocumentUpdateRequestDto) {
+    const doc = await this.driverDocumentRepository.getOneById(id);
+
+    if (dto.expiryDate) {
+      doc.expiryDate = validateExpiryDate(doc.type, dto.expiryDate);
+    }
+
+    if (dto.filePath) {
+      doc.fileUrl = dto.filePath;
+      doc.status = DriverDocumentStatusEnum.PENDING;
+    }
+
+    return await this.driverDocumentRepository.save(doc);
   }
 }

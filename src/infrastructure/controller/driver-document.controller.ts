@@ -4,11 +4,13 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Req,
   UploadedFile,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -27,6 +29,7 @@ import { diskStorage } from 'multer';
 import { DriverDocumentCreateRequestDto } from '../../application/dto/driver-document/driver-document-create-request.dto';
 import { DriverDocumentListResponseDto } from '../../application/dto/driver-document/driver-document-list-response.dto';
 import { DriverDocumentResponseDto } from '../../application/dto/driver-document/driver-document-response.dto';
+import { DriverDocumentUpdateRequestDto } from '../../application/dto/driver-document/driver-document-update-request.dto';
 import { DriverDocumentAppService } from '../../application/service/driver-document.app.service';
 import { DriverDocumentTypeEnum } from '../../domain/enums/driver-document-type.enum';
 
@@ -101,9 +104,9 @@ export class DriverDocumentController {
   @Patch('approve/:id')
   async approveDriverDocument(
     @Req() req: Express.Request,
-    @Param('id') id: string,
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
   ) {
-    const document = this.driverDocumentAppService.approveDocument(id);
+    const document = this.driverDocumentAppService.approveDocument(documentId);
 
     return {
       statusCode: HttpStatus.OK,
@@ -124,9 +127,9 @@ export class DriverDocumentController {
   @Patch('deny/:id')
   async denyDriverDocument(
     @Req() req: Express.Request,
-    @Param('id') id: string,
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
   ) {
-    const document = this.driverDocumentAppService.denyDocument(id);
+    const document = this.driverDocumentAppService.denyDocument(documentId);
 
     return {
       statusCode: HttpStatus.OK,
@@ -147,9 +150,9 @@ export class DriverDocumentController {
   @Get(':id')
   async getDriverDocumentById(
     @Req() req: Express.Request,
-    @Param('id') id: string,
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
   ) {
-    const document = await this.driverDocumentAppService.getOneById(id);
+    const document = await this.driverDocumentAppService.getOneById(documentId);
 
     return {
       statusCode: HttpStatus.OK,
@@ -168,7 +171,9 @@ export class DriverDocumentController {
     description: 'List of driver documents.',
   })
   @Get('driver-profile/:driverId')
-  async getDocumentsByDriver(@Param('driverId') driverId: string) {
+  async getDocumentsByDriver(
+    @Param('driverId', new ParseUUIDPipe()) driverId: string,
+  ) {
     const documents =
       await this.driverDocumentAppService.getAllByDriverId(driverId);
 
@@ -176,6 +181,60 @@ export class DriverDocumentController {
       statusCode: HttpStatus.OK,
       message: 'Driver documents retrieved successfully.',
       ...instanceToPlain(documents, {
+        strategy: 'exposeAll',
+        groups: ['default'],
+      }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Update a driver document.' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        documentType: {
+          type: 'string',
+          enum: Object.values(DriverDocumentTypeEnum),
+        },
+        expiryDate: { type: 'string', format: 'date-time' },
+        file: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @ApiResponse({
+    type: DriverDocumentResponseDto,
+    status: HttpStatus.OK,
+    description: 'The document has been updated.',
+  })
+  @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: 'C:\\files',
+        filename: (req, file, cb) => {
+          const uniqueName =
+            Date.now() + '-' + file.originalname.replace(/\s+/g, '_');
+
+          cb(null, uniqueName);
+        },
+      }),
+    }),
+  )
+  async updateDocument(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @UploadedFile() file: Multer.File,
+    @Body(new ValidationPipe()) dto: DriverDocumentUpdateRequestDto,
+  ) {
+    const updatedDoc = await this.driverDocumentAppService.updateDocument(
+      documentId,
+      dto,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'The document has been updated.',
+      data: instanceToPlain(updatedDoc, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

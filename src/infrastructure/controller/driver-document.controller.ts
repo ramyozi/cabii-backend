@@ -22,11 +22,13 @@ import {
 import { instanceToPlain } from 'class-transformer';
 import Express from 'express';
 import { Multer } from 'multer';
+import { diskStorage } from 'multer';
 
 import { DriverDocumentCreateRequestDto } from '../../application/dto/driver-document/driver-document-create-request.dto';
 import { DriverDocumentListResponseDto } from '../../application/dto/driver-document/driver-document-list-response.dto';
 import { DriverDocumentResponseDto } from '../../application/dto/driver-document/driver-document-response.dto';
 import { DriverDocumentAppService } from '../../application/service/driver-document.app.service';
+import { DriverDocumentTypeEnum } from '../../domain/enums/driver-document-type.enum';
 
 @ApiTags('driver-document')
 @Controller('driver-document')
@@ -43,7 +45,10 @@ export class DriverDocumentController {
       type: 'object',
       properties: {
         driverId: { type: 'string' },
-        documentType: { type: 'string', enum: ['LICENSE', 'INSURANCE', 'ID'] },
+        documentType: {
+          type: 'string',
+          enum: Object.values(DriverDocumentTypeEnum),
+        },
         expiryDate: { type: 'string', format: 'date-time' },
         file: { type: 'string', format: 'binary' },
       },
@@ -55,7 +60,19 @@ export class DriverDocumentController {
     description: 'The document has been uploaded.',
   })
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: 'C:\\files',
+        filename: (req, file, cb) => {
+          const uniqueName =
+            Date.now() + '-' + file.originalname.replace(/\s+/g, '_');
+
+          cb(null, uniqueName);
+        },
+      }),
+    }),
+  )
   async uploadDocument(
     @UploadedFile() file: Multer.File,
     @Body() body: Omit<DriverDocumentCreateRequestDto, 'filePath'>,

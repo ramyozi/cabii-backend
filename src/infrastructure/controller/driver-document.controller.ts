@@ -77,7 +77,7 @@ export class DriverDocumentController {
     @UploadedFile() file: Multer.File,
     @Body() body: Omit<DriverDocumentCreateRequestDto, 'filePath'>,
   ) {
-    const document = await this.driverDocumentAppService.uplodadDocument({
+    const document = await this.driverDocumentAppService.uploadDocument({
       ...body,
       filePath: file.path,
     });

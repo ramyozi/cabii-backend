@@ -29,7 +29,7 @@ export class DriverDocumentAppService {
     return List.build();
   }
 
-  async uplodadDocument(
+  async uploadDocument(
     dto: DriverDocumentCreateRequestDto,
   ): Promise<DriverDocument> {
     const driver = await this.driverProfileRepository.getOneById(dto.driverId);

@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { CustomerProfile } from '../../domain/entity/customer-profile.entity';
 import { CustomerProfileRepository } from '../../infrastructure/repository/customer-profile.repository';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
+import { ListBuilder, ListInterface } from '../common/list';
 import { CustomerProfileCreateRequestDto } from '../dto/customer/customer-profile-create-request.dto';
 
 @Injectable()
@@ -14,8 +15,13 @@ export class CustomerProfileAppService {
     private readonly authService: AuthService,
   ) {}
 
-  async getList() {
-    return await this.customerProfileRepository.getAll();
+  async getList(): Promise<ListInterface<CustomerProfile>> {
+    const [customers, customersCount] =
+      await this.customerProfileRepository.getAll();
+
+    const list = new ListBuilder(customers, customersCount);
+
+    return list.build();
   }
 
   async getOneById(customerProfileId: string) {

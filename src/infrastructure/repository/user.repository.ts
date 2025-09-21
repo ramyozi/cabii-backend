@@ -21,7 +21,7 @@ export class UserRepository extends Repository<User> {
     super(User, entityManager || dataSource!.createEntityManager());
   }
 
-  async getAll() {
+  async getAll(): Promise<[User[], number]> {
     const query = this.createQueryBuilder('user');
 
     return await query.getManyAndCount();

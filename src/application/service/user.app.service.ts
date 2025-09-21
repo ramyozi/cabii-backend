@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { User } from '../../domain/entity/user.entity';
 import { RoleEnum } from '../../domain/enums/role.enum';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
+import { ListBuilder, ListInterface } from '../common/list';
 import { UserCreateRequestDto } from '../dto/user/user-create-request.dto';
 
 @Injectable()
@@ -13,8 +14,12 @@ export class UserAppService {
     private readonly authService: AuthService,
   ) {}
 
-  async getList() {
-    return await this.userRepository.getAll();
+  async getList(): Promise<ListInterface<User>> {
+    const [users, usersCount] = await this.userRepository.getAll();
+
+    const list = new ListBuilder(users, usersCount);
+
+    return list.build();
   }
 
   async getOneById(userId: string) {

@@ -18,6 +18,8 @@ import {
 import { instanceToPlain } from 'class-transformer';
 import Express from 'express';
 
+import { EmailAvailibilityCheckRequestDto } from '../../application/dto/user/email-availibility-check-request.dto';
+import { PhoneAvailibilityCheckRequestDto } from '../../application/dto/user/phone-availibility-check-request.dto';
 import { UserCreateRequestDto } from '../../application/dto/user/user-create-request.dto';
 import { UserListResponseDto } from '../../application/dto/user/user-list-response.dto';
 import { UserResponseDto } from '../../application/dto/user/user-response.dto';
@@ -122,9 +124,9 @@ export class UserController {
   @Get('check-email/:email')
   async checkEmailAvailability(
     @Req() req: Request,
-    @Param('email') email: string,
+    @Param('email') dto: EmailAvailibilityCheckRequestDto,
   ) {
-    const isAvailable = await this.userAppService.isEmailAvailable(email);
+    const isAvailable = await this.userAppService.isEmailAvailable(dto.email);
 
     return {
       statusCode: HttpStatus.OK,
@@ -141,9 +143,12 @@ export class UserController {
   @Get('check-phone/:phone')
   async checkPhoneNumberAvailability(
     @Req() req: Request,
-    @Param('phone') phone: string,
+    @Param('phone')
+    dto: PhoneAvailibilityCheckRequestDto,
   ) {
-    const isAvailable = await this.userAppService.isPhoneNumberAvailable(phone);
+    const isAvailable = await this.userAppService.isPhoneNumberAvailable(
+      dto.phone,
+    );
 
     return {
       statusCode: HttpStatus.OK,

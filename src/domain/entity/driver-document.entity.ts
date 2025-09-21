@@ -38,7 +38,7 @@ export class DriverDocument {
   @Column({ type: 'timestamptz', nullable: true })
   expiryDate?: Date;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => DriverProfile })
   @ManyToOne(() => DriverProfile, (driver) => driver.documents, {
     onDelete: 'CASCADE',
   })

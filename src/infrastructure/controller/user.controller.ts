@@ -61,8 +61,11 @@ export class UserController {
     description: 'User.',
   })
   @Get(':userId')
-  async getUserById(@Req() req: Express.Request, @Param('id') id: string) {
-    const user = await this.userAppService.getOneById(id);
+  async getUserById(
+    @Req() req: Express.Request,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+  ) {
+    const user = await this.userAppService.getOneById(userId);
 
     return {
       statusCode: HttpStatus.OK,
@@ -121,10 +124,10 @@ export class UserController {
     status: HttpStatus.OK,
     description: 'Email availability.',
   })
-  @Get('check-email/:email')
+  @Get('check-email')
   async checkEmailAvailability(
     @Req() req: Request,
-    @Param('email') dto: EmailAvailibilityCheckRequestDto,
+    @Body(new ValidationPipe()) dto: EmailAvailibilityCheckRequestDto,
   ) {
     const isAvailable = await this.userAppService.isEmailAvailable(dto.email);
 
@@ -140,10 +143,10 @@ export class UserController {
     description: 'Phone number availability.',
   })
   @ApiOperation({ summary: 'Check phone number availability.' })
-  @Get('check-phone/:phone')
+  @Get('check-phone')
   async checkPhoneNumberAvailability(
     @Req() req: Request,
-    @Param('phone')
+    @Body(new ValidationPipe())
     dto: PhoneAvailibilityCheckRequestDto,
   ) {
     const isAvailable = await this.userAppService.isPhoneNumberAvailable(

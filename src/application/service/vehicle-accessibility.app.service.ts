@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 
 import { AccessibilityFeature } from '../../domain/entity/accessibility-feature.entity';
 import { VehicleAccessibility } from '../../domain/entity/vehicle-accessibility.entity';
+import { VehicleAccessibilityNotFoundException } from '../../domain/exception/accessibility/vehicle-accessibility-not-found.exception';
 import { AccessibilityFeatureRepository } from '../../infrastructure/repository/accessibility-feature.repository';
 import { VehicleAccessibilityRepository } from '../../infrastructure/repository/vehicle-accessibility.repository';
 import { VehicleRepository } from '../../infrastructure/repository/vehicle.repository';
 import { ListBuilder, ListInterface } from '../common/list';
+import { VehicleAccessibilityAlreadyExistsException } from '../dto/accessibility/vehicle/vehicle-accessibility-already-exists.exception';
 
 @Injectable()
 export class VehicleAccessibilityAppService {
@@ -23,12 +25,28 @@ export class VehicleAccessibilityAppService {
     const feature =
       await this.accessibilityFeatureRepository.getOneById(featureId);
 
-    const vehicleAcc = new VehicleAccessibility();
+    try {
+      await this.vehicleAccessibilityRepository.getByVehicleAndFeature(
+        vehicleId,
+        featureId,
+      );
 
-    vehicleAcc.vehicle = vehicle;
-    vehicleAcc.feature = feature;
+      throw new VehicleAccessibilityAlreadyExistsException(
+        vehicleId,
+        featureId,
+      );
+    } catch (error) {
+      if (error instanceof VehicleAccessibilityNotFoundException) {
+        const vehicleAcc = new VehicleAccessibility();
 
-    return await this.vehicleAccessibilityRepository.save(vehicleAcc);
+        vehicleAcc.vehicle = vehicle;
+        vehicleAcc.feature = feature;
+
+        return await this.vehicleAccessibilityRepository.save(vehicleAcc);
+      }
+
+      throw error;
+    }
   }
 
   async removeFeatureFromVehicle(

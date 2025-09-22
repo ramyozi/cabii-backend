@@ -23,7 +23,11 @@ export class AccessibilityFeatureRepository extends Repository<AccessibilityFeat
   }
 
   async getOneById(id: string): Promise<AccessibilityFeature> {
-    const feature = await this.findOne({ where: { id } });
+    const feature = await this.createQueryBuilder('feature')
+      .where('feature.id = :id', {
+        id,
+      })
+      .getOne();
 
     if (!feature) {
       throw new AccessibilityFeatureNotFoundException(id);
@@ -37,7 +41,9 @@ export class AccessibilityFeatureRepository extends Repository<AccessibilityFeat
   }
 
   async getByName(name: string): Promise<AccessibilityFeature> {
-    const feature = await this.findOne({ where: { name } });
+    const feature = await this.createQueryBuilder('feature')
+      .where('feature.name = :name', { name })
+      .getOne();
 
     if (!feature) {
       throw new AccessibilityFeatureNotFoundException(

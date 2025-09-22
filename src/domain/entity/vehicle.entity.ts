@@ -6,13 +6,16 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 
 import { DriverProfile } from './driver-profile.entity';
 import { VehicleAccessibility } from './vehicle-accessibility.entity';
 import { VehicleCategory } from './vehicle-category.entity';
+import { VehicleStatusEnum } from '../enums/vehicle-status.enum';
 
 @Entity()
+@Unique(['plate'])
 export class Vehicle {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
@@ -41,6 +44,26 @@ export class Vehicle {
   @ApiProperty()
   @Column({ type: 'varchar', length: 255 })
   chassisNumber: string;
+
+  @ApiProperty()
+  @Column({ type: 'int', nullable: true })
+  year?: number;
+
+  @ApiProperty({ enum: VehicleStatusEnum })
+  @Column({
+    type: 'enum',
+    enum: VehicleStatusEnum,
+    default: VehicleStatusEnum.UNDER_REVIEW,
+  })
+  status: VehicleStatusEnum;
+
+  @ApiProperty()
+  @Column({ type: 'timestamptz', nullable: true })
+  insuranceExpiryDate?: Date;
+
+  @ApiProperty()
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  insuranceFileUrl?: string;
 
   @ManyToOne(() => VehicleCategory, { nullable: false })
   @JoinColumn({ name: 'category_id' })

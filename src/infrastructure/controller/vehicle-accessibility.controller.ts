@@ -18,7 +18,7 @@ import { VehicleAccessibilityResponseDto } from '../../application/dto/accessibi
 import { VehicleAccessibilityAppService } from '../../application/service/vehicle-accessibility.app.service';
 
 @ApiTags('vehicle-accessibility')
-@Controller('vehicle/:vehicleId/accessibility')
+@Controller('vehicle-accessibility')
 @ApiBearerAuth('JWT-auth')
 export class VehicleAccessibilityController {
   constructor(

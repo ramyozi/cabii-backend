@@ -18,7 +18,7 @@ import { UserAccessibilityResponseDto } from '../../application/dto/accessibilit
 import { UserAccessibilityAppService } from '../../application/service/user-accessibility.app.service';
 
 @ApiTags('user-accessibility')
-@Controller('user/:userId/accessibility')
+@Controller('user-accessibility')
 @ApiBearerAuth('JWT-auth')
 export class UserAccessibilityController {
   constructor(

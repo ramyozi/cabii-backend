@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { AccessibilityFeature } from '../../domain/entity/accessibility-feature.entity';
+import { AccessibilityFeatureNotFoundException } from '../../domain/exception/accessibility/accessibility-feature-not-found.exception';
 
 @Injectable()
 export class AccessibilityFeatureRepository extends Repository<AccessibilityFeature> {
@@ -21,25 +22,29 @@ export class AccessibilityFeatureRepository extends Repository<AccessibilityFeat
     );
   }
 
-  async getAll(): Promise<[AccessibilityFeature[], number]> {
-    return this.createQueryBuilder('feature').getManyAndCount();
-  }
-
   async getOneById(id: string): Promise<AccessibilityFeature> {
-    const feature = await this.findOneBy({ id });
+    const feature = await this.findOne({ where: { id } });
 
     if (!feature) {
-      throw new Error(`AccessibilityFeature with id ${id} not found`);
+      throw new AccessibilityFeatureNotFoundException(id);
     }
 
     return feature;
   }
 
-  async isNameAvailable(name: string): Promise<boolean> {
-    const count = await this.createQueryBuilder('feature')
-      .where('feature.name = :name', { name })
-      .getCount();
+  async getAll(): Promise<[AccessibilityFeature[], number]> {
+    return this.createQueryBuilder('feature').getManyAndCount();
+  }
 
-    return count === 0;
+  async getByName(name: string): Promise<AccessibilityFeature> {
+    const feature = await this.findOne({ where: { name } });
+
+    if (!feature) {
+      throw new AccessibilityFeatureNotFoundException(
+        `AccessibilityFeature with name '${name}' not found`,
+      );
+    }
+
+    return feature;
   }
 }

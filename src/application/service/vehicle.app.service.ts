@@ -34,6 +34,7 @@ export class VehicleAppService {
     vehicle.model = dto.model;
     vehicle.plate = dto.plate;
     vehicle.color = dto.color;
+    vehicle.year = dto.year;
     vehicle.chassisNumber = dto.chassisNumber;
 
     vehicle.driver = await this.driverProfileRepository.getOneById(

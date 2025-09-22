@@ -3,8 +3,8 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -43,7 +43,7 @@ export class DriverProfile {
   })
   commissions: DriverCommission[];
 
-  @ManyToOne(() => User)
+  @OneToOne(() => User, (user) => user.driverProfile, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   @Unique(['user'])
   user: User;

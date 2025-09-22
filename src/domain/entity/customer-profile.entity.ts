@@ -1,7 +1,7 @@
 import {
   Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -13,7 +13,7 @@ export class CustomerProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User)
+  @OneToOne(() => User, (user) => user.customerProfile, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   @Unique(['user'])
   user: User;

@@ -35,9 +35,7 @@ export class AuthService {
   }
 
   async signIn(signInDto: SignInRequestDto): Promise<AuthTokenDto> {
-    const user = await this.userRepository.getOneByLoginOrEmail(
-      signInDto.login,
-    );
+    const user = await this.userRepository.getOneByEmail(signInDto.email);
     const hashedPassword = this.hashPassword(signInDto.password);
 
     if (user.password !== hashedPassword) {

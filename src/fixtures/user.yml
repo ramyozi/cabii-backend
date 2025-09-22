@@ -3,7 +3,6 @@ items:
   user1:
     firstname: 'Ali'
     lastname: 'Baba'
-    login: 'alibaba'
     email: 'alibaba@example.com'
     phone: '+123456789'
     role: 'USER'
@@ -14,7 +13,6 @@ items:
   user2:
     firstname: 'Khalid'
     lastname: 'Shahzad'
-    login: 'khalidshahzad'
     email: 'khalidshahzad@example.com'
     phone: '+123466789'
     role: 'USER'
@@ -25,7 +23,6 @@ items:
   user3:
     firstname: 'Layla'
     lastname: 'Mansour'
-    login: 'layla.mansour'
     email: 'layla.mansour@example.com'
     phone: '+123457789'
     role: 'USER'

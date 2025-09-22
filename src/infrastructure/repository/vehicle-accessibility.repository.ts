@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
+import { AccessibilityFeature } from '../../domain/entity/accessibility-feature.entity';
 import { VehicleAccessibility } from '../../domain/entity/vehicle-accessibility.entity';
 import { VehicleAccessibilityNotFoundException } from '../../domain/exception/accessibility/vehicle-accessibility-not-found.exception';
 
@@ -58,13 +59,16 @@ export class VehicleAccessibilityRepository extends Repository<VehicleAccessibil
     return va;
   }
 
-  async getAllByVehicleId(
+  async getFeaturesByVehicleId(
     vehicleId: string,
-  ): Promise<[VehicleAccessibility[], number]> {
-    const query = this.createQueryBuilder('va')
+  ): Promise<[AccessibilityFeature[], number]> {
+    const qb = this.createQueryBuilder('va')
       .leftJoinAndSelect('va.feature', 'feature')
       .where('va.vehicle.id = :vehicleId', { vehicleId });
 
-    return query.getManyAndCount();
+    const [vehicleAccessibilities, count] = await qb.getManyAndCount();
+    const features = vehicleAccessibilities.map((va) => va.feature);
+
+    return [features, count];
   }
 }

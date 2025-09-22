@@ -1,7 +1,6 @@
 import {
   Controller,
   Delete,
-  Get,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -25,21 +24,6 @@ export class UserAccessibilityController {
   constructor(
     private readonly userAccessibilityAppService: UserAccessibilityAppService,
   ) {}
-
-  @ApiOperation({ summary: 'Get all accessibility features for a user' })
-  @ApiResponse({ type: UserAccessibilityResponseDto, status: HttpStatus.OK })
-  @Get('user/:userId')
-  async getUserAccessibility(
-    @Param('userId', new ParseUUIDPipe()) userId: string,
-  ) {
-    const list =
-      await this.userAccessibilityAppService.getUserAccessibility(userId);
-
-    return {
-      statusCode: HttpStatus.OK,
-      ...instanceToPlain(list, { strategy: 'exposeAll' }),
-    };
-  }
 
   @ApiOperation({ summary: 'Add feature to user' })
   @ApiResponse({

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { AccessibilityFeature } from '../../domain/entity/accessibility-feature.entity';
 import { VehicleAccessibility } from '../../domain/entity/vehicle-accessibility.entity';
 import { AccessibilityFeatureRepository } from '../../infrastructure/repository/accessibility-feature.repository';
 import { VehicleAccessibilityRepository } from '../../infrastructure/repository/vehicle-accessibility.repository';
@@ -43,12 +44,16 @@ export class VehicleAccessibilityAppService {
     await this.vehicleAccessibilityRepository.remove(vehicleAcc);
   }
 
-  async getVehicleAccessibility(
+  async getAccessibilityFeatures(
     vehicleId: string,
-  ): Promise<ListInterface<VehicleAccessibility>> {
-    const [vehicleAccessibilities, count] =
-      await this.vehicleAccessibilityRepository.getAllByVehicleId(vehicleId);
+  ): Promise<ListInterface<AccessibilityFeature>> {
+    const [features, count] =
+      await this.vehicleAccessibilityRepository.getFeaturesByVehicleId(
+        vehicleId,
+      );
 
-    return new ListBuilder(vehicleAccessibilities, count).build();
+    const list = new ListBuilder(features, count);
+
+    return list.build();
   }
 }

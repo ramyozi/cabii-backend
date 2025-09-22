@@ -20,6 +20,7 @@ import { instanceToPlain } from 'class-transformer';
 import Express from 'express';
 
 import { AccessibilityFeatureCreateRequestDto } from '../../application/dto/accessibility/accessibility-feature-create-request.dto';
+import { AccessibilityFeatureListResponseDto } from '../../application/dto/accessibility/accessibility-feature-list-response.dto';
 import { AccessibilityFeatureUpdateRequestDto } from '../../application/dto/accessibility/accessibility-feature-update-request.dto';
 import { AccessibilityFeatureAppService } from '../../application/service/accessibility-feature.app.service';
 import { AccessibilityFeature } from '../../domain/entity/accessibility-feature.entity';
@@ -33,7 +34,10 @@ export class AccessibilityFeatureController {
   ) {}
 
   @ApiOperation({ summary: 'List all accessibility features' })
-  @ApiResponse({ type: [AccessibilityFeature], status: HttpStatus.OK })
+  @ApiResponse({
+    type: AccessibilityFeatureListResponseDto,
+    status: HttpStatus.OK,
+  })
   @Get()
   async getAll(@Req() req: Express.Request) {
     const features = await this.featureAppService.getList();

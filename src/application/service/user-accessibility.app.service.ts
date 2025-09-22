@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { AccessibilityFeature } from '../../domain/entity/accessibility-feature.entity';
 import { UserAccessibility } from '../../domain/entity/user-accessibility.entity';
 import { AccessibilityFeatureRepository } from '../../infrastructure/repository/accessibility-feature.repository';
 import { UserAccessibilityRepository } from '../../infrastructure/repository/user-accessibility.repository';
@@ -42,12 +43,14 @@ export class UserAccessibilityAppService {
     await this.userAccessibilityRepository.remove(userAcc);
   }
 
-  async getUserAccessibility(
+  async getAccessibilityFeatures(
     userId: string,
-  ): Promise<ListInterface<UserAccessibility>> {
-    const [userAccessibilities, count] =
-      await this.userAccessibilityRepository.getAllByUserId(userId);
+  ): Promise<ListInterface<AccessibilityFeature>> {
+    const [features, count] =
+      await this.userAccessibilityRepository.getFeaturesByUserId(userId);
 
-    return new ListBuilder(userAccessibilities, count).build();
+    const list = new ListBuilder(features, count);
+
+    return list.build();
   }
 }

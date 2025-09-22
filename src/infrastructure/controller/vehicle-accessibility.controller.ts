@@ -1,7 +1,6 @@
 import {
   Controller,
   Delete,
-  Get,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -25,23 +24,6 @@ export class VehicleAccessibilityController {
   constructor(
     private readonly vehicleAccessibilityAppService: VehicleAccessibilityAppService,
   ) {}
-
-  @ApiOperation({ summary: 'Get all accessibility features for a vehicle' })
-  @ApiResponse({ type: VehicleAccessibilityResponseDto, status: HttpStatus.OK })
-  @Get('vehicle/:vehicleId')
-  async getVehicleAccessibility(
-    @Param('vehicleId', new ParseUUIDPipe()) vehicleId: string,
-  ) {
-    const list =
-      await this.vehicleAccessibilityAppService.getVehicleAccessibility(
-        vehicleId,
-      );
-
-    return {
-      statusCode: HttpStatus.OK,
-      ...instanceToPlain(list, { strategy: 'exposeAll' }),
-    };
-  }
 
   @ApiOperation({ summary: 'Add feature to vehicle' })
   @ApiResponse({

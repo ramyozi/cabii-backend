@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
+import { AccessibilityFeature } from '../../domain/entity/accessibility-feature.entity';
 import { UserAccessibility } from '../../domain/entity/user-accessibility.entity';
 import { UserAccessibilityNotFoundException } from '../../domain/exception/accessibility/user-accessibility-not-found.exception';
 
@@ -56,11 +57,16 @@ export class UserAccessibilityRepository extends Repository<UserAccessibility> {
     return ua;
   }
 
-  async getAllByUserId(userId: string): Promise<[UserAccessibility[], number]> {
-    const query = this.createQueryBuilder('ua')
+  async getFeaturesByUserId(
+    userId: string,
+  ): Promise<[AccessibilityFeature[], number]> {
+    const qb = this.createQueryBuilder('ua')
       .leftJoinAndSelect('ua.feature', 'feature')
       .where('ua.user.id = :userId', { userId });
 
-    return query.getManyAndCount();
+    const [userAccessibilities, count] = await qb.getManyAndCount();
+    const features = userAccessibilities.map((ua) => ua.feature);
+
+    return [features, count];
   }
 }

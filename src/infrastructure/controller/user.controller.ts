@@ -18,11 +18,13 @@ import {
 import { instanceToPlain } from 'class-transformer';
 import Express from 'express';
 
+import { AccessibilityFeatureListResponseDto } from '../../application/dto/accessibility/accessibility-feature-list-response.dto';
 import { EmailAvailibilityCheckRequestDto } from '../../application/dto/user/email-availibility-check-request.dto';
 import { PhoneAvailibilityCheckRequestDto } from '../../application/dto/user/phone-availibility-check-request.dto';
 import { UserCreateRequestDto } from '../../application/dto/user/user-create-request.dto';
 import { UserListResponseDto } from '../../application/dto/user/user-list-response.dto';
 import { UserResponseDto } from '../../application/dto/user/user-response.dto';
+import { UserAccessibilityAppService } from '../../application/service/user-accessibility.app.service';
 import { UserAppService } from '../../application/service/user.app.service';
 import { RoleEnum } from '../../domain/enums/role.enum';
 import { CurrentUserId } from '../decorator/auth/jwt-claim.decorator';
@@ -32,7 +34,10 @@ import { Roles } from '../decorator/auth/roles.decorator';
 @Controller('user')
 @ApiBearerAuth('JWT-auth')
 export class UserController {
-  constructor(private readonly userAppService: UserAppService) {}
+  constructor(
+    private readonly userAccessibilityAppService: UserAccessibilityAppService,
+    private readonly userAppService: UserAppService,
+  ) {}
 
   @ApiOperation({ summary: 'Get all users.' })
   @ApiBearerAuth('JWT-auth')
@@ -54,6 +59,24 @@ export class UserController {
     };
   }
 
+  @ApiOperation({ summary: 'Get accessibility features of a user' })
+  @ApiResponse({
+    type: AccessibilityFeatureListResponseDto,
+    status: HttpStatus.OK,
+  })
+  @Get(':userId/accessibility-features')
+  async getAccessibilityFeatures(
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+  ) {
+    const list =
+      await this.userAccessibilityAppService.getAccessibilityFeatures(userId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      ...instanceToPlain(list, { strategy: 'exposeAll' }),
+    };
+  }
+
   @ApiOperation({ summary: 'Get User by id.' })
   @ApiResponse({
     type: UserResponseDto,
@@ -69,7 +92,7 @@ export class UserController {
 
     return {
       statusCode: HttpStatus.OK,
-      ...instanceToPlain(user, {
+      data: instanceToPlain(user, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

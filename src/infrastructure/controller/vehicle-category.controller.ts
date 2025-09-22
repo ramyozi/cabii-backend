@@ -69,7 +69,7 @@ export class VehicleCategoryController {
 
     return {
       statusCode: HttpStatus.OK,
-      ...instanceToPlain(vehicleCategory, {
+      data: instanceToPlain(vehicleCategory, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

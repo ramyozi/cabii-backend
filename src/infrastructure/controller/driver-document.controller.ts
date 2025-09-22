@@ -111,7 +111,7 @@ export class DriverDocumentController {
     return {
       statusCode: HttpStatus.OK,
       message: 'The document has been approved.',
-      ...instanceToPlain(document, {
+      data: instanceToPlain(document, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),
@@ -134,7 +134,7 @@ export class DriverDocumentController {
     return {
       statusCode: HttpStatus.OK,
       message: 'The document has been denied.',
-      ...instanceToPlain(document, {
+      data: instanceToPlain(document, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

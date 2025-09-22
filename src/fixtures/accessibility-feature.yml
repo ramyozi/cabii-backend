@@ -1,16 +1,13 @@
 entity: AccessibilityFeature
 items:
-  wheelchair:
-    name: 'Wheelchair'
-    description: 'Supports wheelchair users'
-    icon: 'wheelchair-icon.png'
+  feature1:
+    name: 'Wheelchair Accessible'
+    category: 'MOBILITY'
+    description: 'Vehicle equipped for wheelchairs'
+    icon: 'wheelchair.png'
 
-  guideDog:
-    name: 'Guide Dog'
-    description: 'Supports visually impaired users'
-    icon: 'guide-dog-icon.png'
-
-  hearingAid:
-    name: 'Hearing Aid'
-    description: 'Supports hearing-impaired users'
-    icon: 'hearing-aid-icon.png'
+  feature2:
+    name: 'Guide Dog Allowed'
+    category: 'VISION'
+    description: 'Support animals are permitted'
+    icon: 'dog.png'

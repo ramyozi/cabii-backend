@@ -1,11 +1,21 @@
 entity: DriverProfile
 items:
   driver1:
-    user: "@user2"
+    user: '@user2'
     isAvailable: true
-    driverLicenseSerial: "UFYT-FUYG-ULKH-KUGH"
+    driverLicenseSerial: 'UFYT-FUYG-ULKH-KUGH'
+    ratingAvg: 4.7
+    totalRatings: 123
+    currentLat: 48.8566
+    currentLng: 2.3522
+    lastSeenAt: '2025-09-20T12:00:00Z'
 
   driver2:
-    user: "@user3"
+    user: '@user3'
     isAvailable: false
-    driverLicenseSerial: "HFHY-TDTE-RSUK-HLOH"
+    driverLicenseSerial: 'HFHY-TDTE-RSUK-HLOH'
+    ratingAvg: 4.2
+    totalRatings: 54
+    currentLat: 51.5074
+    currentLng: -0.1278
+    lastSeenAt: '2025-09-19T15:30:00Z'

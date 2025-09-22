@@ -1,9 +1,9 @@
 entity: VehicleAccessibility
 items:
-  va1:
-    vehicle: '@vehicle3'
-    feature: '@wheelchair'
+  vehiclePref1:
+    vehicle: '@vehicle1'
+    feature: '@feature1'
 
-  va2:
-    vehicle: '@vehicle3'
-    feature: '@hearingAid'
+  vehiclePref2:
+    vehicle: '@vehicle2'
+    feature: '@feature2'

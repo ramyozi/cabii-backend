@@ -1,15 +1,14 @@
 entity: DriverCommission
 items:
-  commission1:
+  comm1:
     driver: '@driver1'
     type: 'PERCENTAGE'
-    percentage: 15.0
-    fixedFee: null
+    percentage: 20.0
     active: true
 
-  commission2:
+  comm2:
     driver: '@driver2'
-    type: 'FIXED'
-    percentage: null
-    fixedFee: 2.5
+    type: 'MIXED'
+    percentage: 10.0
+    fixedFee: 1.5
     active: true

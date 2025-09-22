@@ -29,3 +29,14 @@ items:
     __call:
       setPassword:
         - 'foo'
+
+  admin1:
+    firstname: 'Admin'
+    lastname: 'Cabii'
+    email: 'admin@cabii.com'
+    phone: '+111111111'
+    role: 'ADMIN'
+    isActive: true
+    __call:
+      setPassword:
+        - 'adminpass'

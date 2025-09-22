@@ -47,4 +47,25 @@ export class DriverProfile {
   @JoinColumn({ name: 'user_id' })
   @Unique(['user'])
   user: User;
+
+  // for tracking purposes
+  @ApiProperty()
+  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
+  ratingAvg: number;
+
+  @ApiProperty()
+  @Column({ type: 'int', default: 0 })
+  totalRatings: number;
+
+  @ApiProperty()
+  @Column({ type: 'decimal', precision: 9, scale: 6, nullable: true })
+  currentLat?: number;
+
+  @ApiProperty()
+  @Column({ type: 'decimal', precision: 9, scale: 6, nullable: true })
+  currentLng?: number;
+
+  @ApiProperty()
+  @Column({ type: 'timestamptz', nullable: true })
+  lastSeenAt?: Date;
 }

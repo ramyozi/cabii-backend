@@ -28,8 +28,8 @@ export class CustomerProfileAppService {
     return await this.customerProfileRepository.getOneById(customerProfileId);
   }
 
-  async getOneByLogin(login: string) {
-    return await this.customerProfileRepository.getOneByLoginOrEmail(login);
+  async getOneByEmail(email: string) {
+    return await this.customerProfileRepository.getOneByEmail(email);
   }
 
   async create(dto: CustomerProfileCreateRequestDto): Promise<CustomerProfile> {

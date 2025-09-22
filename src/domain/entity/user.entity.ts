@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -24,6 +25,10 @@ export class User {
   id: string;
 
   @ApiProperty()
+  @Column('boolean', { default: true })
+  isActive: boolean;
+
+  @ApiProperty()
   @Column('varchar', { length: 255, nullable: false })
   firstname: string;
 
@@ -31,14 +36,13 @@ export class User {
   @Column('varchar', { length: 255, nullable: false })
   lastname: string;
 
-  @Column('varchar', { length: 255, unique: true })
-  login: string;
-
   @ApiProperty()
+  @Index()
   @Column('varchar', { length: 255, unique: true, nullable: false })
   email: string;
 
   @ApiProperty()
+  @Index()
   @Column('varchar', { length: 20, unique: true, nullable: false })
   phone: string;
 

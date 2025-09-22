@@ -6,10 +6,6 @@ import { RoleEnum } from '../../../domain/enums/role.enum';
 export class UserCreateRequestDto {
   @ApiProperty()
   @IsString()
-  login: string;
-
-  @ApiProperty()
-  @IsString()
   firstname: string;
 
   @ApiProperty()

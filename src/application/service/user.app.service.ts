@@ -26,14 +26,13 @@ export class UserAppService {
     return await this.userRepository.getOneById(userId);
   }
 
-  async getOneByLogin(login: string) {
-    return await this.userRepository.getOneByLoginOrEmail(login);
+  async getOneByEmail(email: string) {
+    return await this.userRepository.getOneByEmail(email);
   }
 
   async create(dto: UserCreateRequestDto): Promise<User> {
     const user = new User();
 
-    user.login = dto.login;
     user.role = dto.role || RoleEnum.User;
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;

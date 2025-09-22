@@ -3,17 +3,12 @@ items:
   doc1:
     driver: '@driver1'
     type: 'DRIVER_LICENSE'
-    fileUrl: 'https://example.com/docs/driver1-license.pdf'
+    fileUrl: 'http://files.cabii.com/docs/driver1-license.pdf'
     status: 'VALIDATED'
+    expiryDate: '2027-01-01T00:00:00Z'
 
   doc2:
-    driver: '@driver1'
-    type: 'INSURANCE'
-    fileUrl: 'https://example.com/docs/driver1-insurance.pdf'
-    status: 'VALIDATED'
-
-  doc3:
     driver: '@driver2'
-    type: 'DRIVER_LICENSE'
-    fileUrl: 'https://example.com/docs/driver2-license.pdf'
+    type: 'INSURANCE'
+    fileUrl: 'http://files.cabii.com/docs/driver2-insurance.pdf'
     status: 'PENDING'

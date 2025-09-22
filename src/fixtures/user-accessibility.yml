@@ -1,13 +1,9 @@
 entity: UserAccessibility
 items:
-  ua1:
+  userPref1:
     user: '@user1'
-    feature: '@wheelchair'
+    feature: '@feature1'
 
-  ua2:
-    user: '@user2'
-    feature: '@guideDog'
-
-  ua3:
-    user: '@user3'
-    feature: '@hearingAid'
+  userPref2:
+    user: '@user1'
+    feature: '@feature2'

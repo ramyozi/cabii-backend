@@ -37,7 +37,7 @@ Nous avons adopté une approche **profilée** :
 
 ```ts
 const user = await userRepository.findOne({
-  where: { login: 'ali.baba' },
+  where: { email: 'ali.baba@toto.com' },
 });
 
 if (user.driverProfile) {

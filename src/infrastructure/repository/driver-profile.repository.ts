@@ -43,17 +43,17 @@ export class DriverProfileRepository extends Repository<DriverProfile> {
     return driverProfile;
   }
 
-  async getOneByLoginOrEmail(loginOrEmail: string) {
+  async getOneByEmail(email: string) {
     const query = this.createQueryBuilder('driverProfile').where(
-      'driverProfile.login = :loginOrEmail OR driverProfile.email = :loginOrEmail',
-      { loginOrEmail },
+      'driverProfile.email = :email',
+      { email: email },
     );
 
     const driverProfile = await query.getOne();
 
     if (!driverProfile) {
       throw new DriverProfileNotFoundException(
-        `DriverProfile with Id ${loginOrEmail} not found`,
+        `DriverProfile with Id ${email} not found`,
       );
     }
 

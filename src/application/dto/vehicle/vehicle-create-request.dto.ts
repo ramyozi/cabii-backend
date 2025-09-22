@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUUID } from 'class-validator';
+import { IsNumber, IsString, IsUUID } from 'class-validator';
 
 export class VehicleCreateRequestDto {
   @ApiProperty()
@@ -22,6 +22,10 @@ export class VehicleCreateRequestDto {
   @ApiProperty()
   @IsString()
   color: string;
+
+  @ApiProperty()
+  @IsNumber()
+  year: number;
 
   @ApiProperty()
   @IsString()

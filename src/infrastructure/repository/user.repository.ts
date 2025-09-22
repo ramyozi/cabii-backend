@@ -38,16 +38,15 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async getOneByLoginOrEmail(loginOrEmail: string) {
-    const query = this.createQueryBuilder('user').where(
-      'user.login = :loginOrEmail OR user.email = :loginOrEmail',
-      { loginOrEmail },
-    );
+  async getOneByEmail(email: string) {
+    const query = this.createQueryBuilder('user').where('user.email = :email', {
+      email,
+    });
 
     const user = await query.getOne();
 
     if (!user) {
-      throw new UserNotFoundException(`User with Id ${loginOrEmail} not found`);
+      throw new UserNotFoundException(`User with email ${email} not found`);
     }
 
     return user;

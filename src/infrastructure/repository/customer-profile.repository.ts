@@ -43,17 +43,17 @@ export class CustomerProfileRepository extends Repository<CustomerProfile> {
     return customerProfile;
   }
 
-  async getOneByLoginOrEmail(loginOrEmail: string) {
+  async getOneByEmail(email: string) {
     const query = this.createQueryBuilder('customerProfile').where(
-      'customerProfile.login = :loginOrEmail OR customerProfile.email = :loginOrEmail',
-      { loginOrEmail },
+      'customerProfile.email = :email',
+      { email: email },
     );
 
     const customerProfile = await query.getOne();
 
     if (!customerProfile) {
       throw new CustomerProfileNotFoundException(
-        `CustomerProfile with Id ${loginOrEmail} not found`,
+        `CustomerProfile with email ${email} not found`,
       );
     }
 

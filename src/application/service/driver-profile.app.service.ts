@@ -27,8 +27,8 @@ export class DriverProfileAppService {
     return await this.driverProfileRepository.getOneById(driverProfileId);
   }
 
-  async getOneByLogin(login: string) {
-    return await this.driverProfileRepository.getOneByLoginOrEmail(login);
+  async getOneByEmail(email: string) {
+    return await this.driverProfileRepository.getOneByEmail(email);
   }
 
   async create(dto: DriverProfileCreateRequestDto): Promise<DriverProfile> {

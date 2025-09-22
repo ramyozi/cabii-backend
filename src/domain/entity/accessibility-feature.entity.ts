@@ -7,6 +7,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { AccessibilityCategoryEnum } from '../enums/accessibility-category.enum';
+
 /**
  * exemple: "Fauteuil roulant", "Chien guide"
  */
@@ -24,6 +26,14 @@ export class AccessibilityFeature {
   @ApiProperty()
   @Column({ type: 'varchar', length: 500, nullable: true })
   description?: string;
+
+  @ApiProperty({ enum: AccessibilityCategoryEnum })
+  @Column({
+    type: 'enum',
+    enum: AccessibilityCategoryEnum,
+    default: AccessibilityCategoryEnum.OTHER,
+  })
+  category: AccessibilityCategoryEnum;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 255, nullable: true })

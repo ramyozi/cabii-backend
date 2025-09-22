@@ -4,12 +4,14 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  Unique,
 } from 'typeorm';
 
 import { AccessibilityFeature } from './accessibility-feature.entity';
 import { Vehicle } from './vehicle.entity';
 
 @Entity()
+@Unique(['vehicle', 'feature'])
 export class VehicleAccessibility {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')

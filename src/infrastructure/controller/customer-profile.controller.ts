@@ -66,7 +66,7 @@ export class CustomerProfileController {
 
     return {
       statusCode: HttpStatus.OK,
-      ...instanceToPlain(customerProfile, {
+      data: instanceToPlain(customerProfile, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

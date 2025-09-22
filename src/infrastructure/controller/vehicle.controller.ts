@@ -66,7 +66,7 @@ export class VehicleController {
 
     return {
       statusCode: HttpStatus.OK,
-      ...instanceToPlain(vehicle, {
+      data: instanceToPlain(vehicle, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

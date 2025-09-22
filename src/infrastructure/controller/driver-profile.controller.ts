@@ -66,7 +66,7 @@ export class DriverProfileController {
 
     return {
       statusCode: HttpStatus.OK,
-      ...instanceToPlain(driverProfile, {
+      data: instanceToPlain(driverProfile, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

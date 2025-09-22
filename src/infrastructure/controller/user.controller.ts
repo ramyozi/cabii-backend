@@ -69,7 +69,7 @@ export class UserController {
 
     return {
       statusCode: HttpStatus.OK,
-      ...instanceToPlain(user, {
+      data: instanceToPlain(user, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

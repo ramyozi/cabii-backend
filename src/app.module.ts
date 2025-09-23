@@ -16,6 +16,7 @@ import { UserAppService } from './application/service/user.app.service';
 import { VehicleAccessibilityAppService } from './application/service/vehicle-accessibility.app.service';
 import { VehicleCategoryAppService } from './application/service/vehicle-category.app.service';
 import { VehicleAppService } from './application/service/vehicle.app.service';
+import { ReservationService } from './domain/service/reservation.service';
 import { UserService } from './domain/service/user.service';
 import { appDataSource } from './infrastructure/app-data-source';
 import { eventEmitterConfig } from './infrastructure/common/event-emitter.config';
@@ -71,6 +72,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     UserService,
     AuthService,
     AuthSessionService,
+    ReservationService,
 
     /* Repository Providers */
     UserRepository,

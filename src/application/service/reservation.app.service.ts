@@ -5,7 +5,7 @@ import { ReservationStatusEnum } from '../../domain/enums/reservation-status.enu
 import { ReservationAlreadyCompletedException } from '../../domain/exception/reservation/reservation-already-completed.exception';
 import { ReservationCannotCancelException } from '../../domain/exception/reservation/reservation-cannot-cancel.exception';
 import { ReservationDriverVehicleMismatchException } from '../../domain/exception/reservation/reservation-driver-vehicle-mismatch.exception';
-import { ReservationInvalidStatusTransitionException } from '../../domain/exception/reservation/reservation-invalid-status-transition.exception';
+import { ReservationService } from '../../domain/service/reservation.service';
 import { CustomerProfileRepository } from '../../infrastructure/repository/customer-profile.repository';
 import { DriverProfileRepository } from '../../infrastructure/repository/driver-profile.repository';
 import { ReservationRepository } from '../../infrastructure/repository/reservation.repository';
@@ -21,6 +21,7 @@ export class ReservationAppService {
     private readonly customerRepo: CustomerProfileRepository,
     private readonly driverRepo: DriverProfileRepository,
     private readonly vehicleRepo: VehicleRepository,
+    private readonly reservationService: ReservationService,
   ) {}
 
   async create(dto: ReservationCreateRequestDto): Promise<Reservation> {
@@ -63,7 +64,10 @@ export class ReservationAppService {
     }
 
     if (dto.status && dto.status !== reservation.status) {
-      this.validateStatusTransition(reservation.status, dto.status);
+      this.reservationService.validateStatusTransition(
+        reservation.status,
+        dto.status,
+      );
       reservation.status = dto.status;
     }
 
@@ -88,32 +92,6 @@ export class ReservationAppService {
     reservation.scheduledAt = dto.scheduledAt ?? reservation.scheduledAt;
 
     return await this.reservationRepo.save(reservation);
-  }
-
-  private validateStatusTransition(
-    current: ReservationStatusEnum,
-    next: ReservationStatusEnum,
-  ) {
-    const allowedTransitions: Record<
-      ReservationStatusEnum,
-      ReservationStatusEnum[]
-    > = {
-      [ReservationStatusEnum.Pending]: [
-        ReservationStatusEnum.Accepted,
-        ReservationStatusEnum.Cancelled,
-      ],
-      [ReservationStatusEnum.Accepted]: [
-        ReservationStatusEnum.InProgress,
-        ReservationStatusEnum.Cancelled,
-      ],
-      [ReservationStatusEnum.InProgress]: [ReservationStatusEnum.Completed],
-      [ReservationStatusEnum.Completed]: [],
-      [ReservationStatusEnum.Cancelled]: [],
-    };
-
-    if (!allowedTransitions[current].includes(next)) {
-      throw new ReservationInvalidStatusTransitionException(current, next);
-    }
   }
 
   async cancel(id: string): Promise<Reservation> {
@@ -198,7 +176,7 @@ export class ReservationAppService {
   async markInProgress(id: string): Promise<Reservation> {
     const reservation = await this.reservationRepo.getOneById(id);
 
-    this.validateStatusTransition(
+    this.reservationService.validateStatusTransition(
       reservation.status,
       ReservationStatusEnum.InProgress,
     );
@@ -210,7 +188,7 @@ export class ReservationAppService {
   async markCompleted(id: string): Promise<Reservation> {
     const reservation = await this.reservationRepo.getOneById(id);
 
-    this.validateStatusTransition(
+    this.reservationService.validateStatusTransition(
       reservation.status,
       ReservationStatusEnum.Completed,
     );

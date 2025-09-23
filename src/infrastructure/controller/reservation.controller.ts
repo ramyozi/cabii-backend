@@ -111,11 +111,7 @@ export class ReservationController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body(new ValidationPipe()) dto: ReservationAssignDriverDto,
   ) {
-    const reservation = await this.reservationAppService.assignDriver(
-      id,
-      dto.driverId,
-      dto.vehicleId,
-    );
+    const reservation = await this.reservationAppService.assignDriver(id, dto);
 
     return {
       statusCode: HttpStatus.OK,

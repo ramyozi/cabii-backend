@@ -5,6 +5,7 @@ import { AccessibilityMatchingAppService } from './accessibility-matching.app.se
 import { Reservation } from '../../domain/entity/reservation.entity';
 import { ReservationStatusEnum } from '../../domain/enums/reservation-status.enum';
 import { ReservationAccessibilityMismatchException } from '../../domain/exception/accessibility/reservation-accessibility-mismatch.exception';
+import { DriverHasNoActiveVehicleException } from '../../domain/exception/driver/driver-has-no-active-vehicle.exception';
 import { ReservationAlreadyCompletedException } from '../../domain/exception/reservation/reservation-already-completed.exception';
 import { ReservationCannotCancelException } from '../../domain/exception/reservation/reservation-cannot-cancel.exception';
 import { ReservationDriverVehicleMismatchException } from '../../domain/exception/reservation/reservation-driver-vehicle-mismatch.exception';
@@ -16,6 +17,7 @@ import { UserAccessibilityRepository } from '../../infrastructure/repository/use
 import { VehicleAccessibilityRepository } from '../../infrastructure/repository/vehicle-accessibility.repository';
 import { VehicleRepository } from '../../infrastructure/repository/vehicle.repository';
 import { ListBuilder, ListInterface } from '../common/list';
+import { ReservationAssignDriverDto } from '../dto/reservation/reservation-assign-driver.dto';
 import { ReservationCreateRequestDto } from '../dto/reservation/reservation-create-request.dto';
 import { ReservationUpdateRequestDto } from '../dto/reservation/reservation-update-request.dto';
 
@@ -82,34 +84,23 @@ export class ReservationAppService {
       reservation.status = dto.status;
     }
 
-    let updatedVehicle = reservation.vehicle; // keep track of final vehicle
-
     if (dto.driverId) {
       const driver = await this.driverRepo.getOneById(dto.driverId);
 
-      if (dto.vehicleId) {
-        const vehicle = await this.vehicleRepository.getOneById(dto.vehicleId);
-
-        if (reservation.driver && vehicle.driver.id !== reservation.driver.id) {
-          throw new ReservationDriverVehicleMismatchException();
-        }
-
-        updatedVehicle = vehicle;
-        reservation.vehicle = vehicle;
+      if (!driver.activeVehicle) {
+        throw new DriverHasNoActiveVehicleException(driver.id);
       }
 
+      await this.ensureAccessibilityCompatible(
+        reservation.customer.user.id,
+        driver.activeVehicle.id,
+      );
+
       reservation.driver = driver;
-    } else if (dto.vehicleId) {
-      throw new ReservationDriverVehicleMismatchException();
+      reservation.vehicle = driver.activeVehicle;
     }
 
     reservation.scheduledAt = dto.scheduledAt ?? reservation.scheduledAt;
-
-    // Only check accessibility if we actually have a vehicle
-    await this.ensureAccessibilityCompatible(
-      reservation.customer.user.id,
-      updatedVehicle?.id,
-    );
 
     return await this.reservationRepo.save(reservation);
   }
@@ -157,18 +148,19 @@ export class ReservationAppService {
 
   async assignDriver(
     id: string,
-    driverId: string,
-    vehicleId: string,
+    dto: ReservationAssignDriverDto,
   ): Promise<Reservation> {
     const reservation = await this.reservationRepo.getOneById(id);
-    const driver = await this.driverRepo.getOneById(driverId);
-    const vehicle = await this.vehicleRepository.getOneById(vehicleId);
+    const driver = await this.driverRepo.getOneById(dto.driverId);
 
-    if (vehicle.driver.id !== driver.id) {
-      throw new ReservationDriverVehicleMismatchException();
+    if (!driver.activeVehicle) {
+      throw new DriverHasNoActiveVehicleException(
+        `Driver ${dto.driverId} has no active vehicle`,
+      );
     }
 
-    // Accessibility check
+    const vehicle = driver.activeVehicle;
+
     await this.ensureAccessibilityCompatible(
       reservation.customer.user.id,
       vehicle.id,
@@ -291,38 +283,31 @@ export class ReservationAppService {
       return []; // driver must share location
     }
 
+    if (!driver.activeVehicle) {
+      throw new DriverHasNoActiveVehicleException(
+        `Driver ${driverId} has no active vehicle`,
+      );
+    }
+
+    const vehicle = driver.activeVehicle;
+
     // Fetch all pending reservations
     const [reservations] = await this.reservationRepo.getAllPending();
 
     const results: { reservation: Reservation; distance: number }[] = [];
 
     for (const reservation of reservations) {
-      // Skip if reservation already has a driver
-      if (reservation.driver) continue;
+      if (reservation.driver) continue; // already taken
 
-      // Driver must have at least one vehicle
-      const vehicles = driver.vehicles ?? [];
+      // Check accessibility
+      const match = await this.accessibilityMatchingService.match(
+        reservation.customer.user.id,
+        vehicle.id,
+      );
 
-      if (!vehicles.length) continue;
+      if (!match.isCompatible) continue;
 
-      // Check each vehicle
-      let compatible = false;
-
-      for (const vehicle of vehicles) {
-        const match = await this.accessibilityMatchingService.match(
-          reservation.customer.user.id,
-          vehicle.id,
-        );
-
-        if (match.isCompatible) {
-          compatible = true;
-          break;
-        }
-      }
-
-      if (!compatible) continue;
-
-      // Distance in meters
+      // Compute distance
       const distance = haversine(
         { lat: driver.currentLat, lon: driver.currentLng },
         { lat: reservation.pickupLat, lon: reservation.pickupLng },
@@ -331,9 +316,7 @@ export class ReservationAppService {
       results.push({ reservation, distance });
     }
 
-    // Sort closest first
     results.sort((a, b) => a.distance - b.distance);
-
     return results;
   }
 }

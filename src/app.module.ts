@@ -10,7 +10,9 @@ import { AuthService } from './application/service/auth.service';
 import { CustomerProfileAppService } from './application/service/customer-profile.app.service';
 import { DriverCommissionAppService } from './application/service/driver-commission.app.service';
 import { DriverDocumentAppService } from './application/service/driver-document.app.service';
+import { DriverLocationAppService } from './application/service/driver-location.app.service';
 import { DriverProfileAppService } from './application/service/driver-profile.app.service';
+import { ReservationExecutionAppService } from './application/service/reservation-execution.app.service';
 import { ReservationAppService } from './application/service/reservation.app.service';
 import { UserAccessibilityAppService } from './application/service/user-accessibility.app.service';
 import { UserAppService } from './application/service/user.app.service';
@@ -26,6 +28,7 @@ import { AuthController } from './infrastructure/controller/auth.controller';
 import { CustomerProfileController } from './infrastructure/controller/customer-profile.controller';
 import { DriverCommissionController } from './infrastructure/controller/driver-commission.controller';
 import { DriverDocumentController } from './infrastructure/controller/driver-document.controller';
+import { DriverLocationController } from './infrastructure/controller/driver-location.controller';
 import { DriverProfileController } from './infrastructure/controller/driver-profile.controller';
 import { ReservationController } from './infrastructure/controller/reservation.controller';
 import { UserAccessibilityController } from './infrastructure/controller/user-accessibility.controller';
@@ -38,7 +41,9 @@ import { AuthSessionRepository } from './infrastructure/repository/auth-session.
 import { CustomerProfileRepository } from './infrastructure/repository/customer-profile.repository';
 import { DriverCommissionRepository } from './infrastructure/repository/driver-commission.repository';
 import { DriverDocumentRepository } from './infrastructure/repository/driver-document.repository';
+import { DriverLocationRepository } from './infrastructure/repository/driver-location.repository';
 import { DriverProfileRepository } from './infrastructure/repository/driver-profile.repository';
+import { ReservationEventRepository } from './infrastructure/repository/reservation-event.repository';
 import { ReservationRepository } from './infrastructure/repository/reservation.repository';
 import { UserAccessibilityRepository } from './infrastructure/repository/user-accessibility.repository';
 import { UserRepository } from './infrastructure/repository/user.repository';
@@ -66,6 +71,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     VehicleAccessibilityController,
     DriverCommissionController,
     ReservationController,
+    DriverLocationController,
   ],
 
   providers: [
@@ -88,6 +94,8 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     VehicleAccessibilityRepository,
     DriverCommissionRepository,
     ReservationRepository,
+    ReservationEventRepository,
+    DriverLocationRepository,
 
     /* App Service Providers */
     UserAppService,
@@ -102,6 +110,8 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     VehicleAccessibilityAppService,
     DriverCommissionAppService,
     ReservationAppService,
+    ReservationExecutionAppService,
+    DriverLocationAppService,
   ],
 })
 export class AppModule {}

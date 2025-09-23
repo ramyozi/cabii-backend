@@ -5,12 +5,15 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { CustomerProfile } from './customer-profile.entity';
+import { DeliveryObject } from './delivery-object.entity';
 import { DriverProfile } from './driver-profile.entity';
+import { RidePassenger } from './ride-passenger.entity';
 import { Vehicle } from './vehicle.entity';
 import { ReservationStatusEnum } from '../enums/reservation-status.enum';
 import { ReservationTypeEnum } from '../enums/reservation-type.enum';
@@ -81,4 +84,10 @@ export class Reservation {
   @ApiProperty({ type: () => Date })
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @OneToMany(() => DeliveryObject, (o) => o.reservation, { cascade: true })
+  deliveryObjects?: DeliveryObject[];
+
+  @OneToMany(() => RidePassenger, (p) => p.reservation, { cascade: true })
+  passengers?: RidePassenger[];
 }

@@ -59,4 +59,12 @@ export class DriverProfileRepository extends Repository<DriverProfile> {
 
     return driverProfile;
   }
+
+  async getAvailableDrivers() {
+    const query = this.createQueryBuilder('driverProfile')
+      .leftJoinAndSelect('driverProfile.currentVehicle', 'vehicle')
+      .where('driverProfile.isAvailable = :isAvailable', { isAvailable: true });
+
+    return await query.getMany();
+  }
 }

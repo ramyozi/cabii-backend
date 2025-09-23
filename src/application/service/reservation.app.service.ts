@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import haversine from 'haversine-distance';
 
+import { AccessibilityMatchingAppService } from './accessibility-matching.app.service';
 import { Reservation } from '../../domain/entity/reservation.entity';
 import { ReservationStatusEnum } from '../../domain/enums/reservation-status.enum';
 import { ReservationAccessibilityMismatchException } from '../../domain/exception/accessibility/reservation-accessibility-mismatch.exception';
@@ -27,6 +29,7 @@ export class ReservationAppService {
     private readonly vehicleRepository: VehicleRepository,
     private readonly vehicleAccessibilityRepository: VehicleAccessibilityRepository,
     private readonly reservationService: ReservationService,
+    private readonly accessibilityMatchingService: AccessibilityMatchingAppService,
   ) {}
 
   async create(dto: ReservationCreateRequestDto): Promise<Reservation> {
@@ -274,5 +277,63 @@ export class ReservationAppService {
     if (missing.length) {
       throw new ReservationAccessibilityMismatchException(missing);
     }
+  }
+
+  async getAvailableForDriver(driverId: string): Promise<
+    {
+      reservation: Reservation;
+      distance: number;
+    }[]
+  > {
+    const driver = await this.driverRepo.getOneById(driverId);
+
+    if (!driver.currentLat || !driver.currentLng) {
+      return []; // driver must share location
+    }
+
+    // Fetch all pending reservations
+    const [reservations] = await this.reservationRepo.getAllPending();
+
+    const results: { reservation: Reservation; distance: number }[] = [];
+
+    for (const reservation of reservations) {
+      // Skip if reservation already has a driver
+      if (reservation.driver) continue;
+
+      // Driver must have at least one vehicle
+      const vehicles = driver.vehicles ?? [];
+
+      if (!vehicles.length) continue;
+
+      // Check each vehicle
+      let compatible = false;
+
+      for (const vehicle of vehicles) {
+        const match = await this.accessibilityMatchingService.match(
+          reservation.customer.user.id,
+          vehicle.id,
+        );
+
+        if (match.isCompatible) {
+          compatible = true;
+          break;
+        }
+      }
+
+      if (!compatible) continue;
+
+      // Distance in meters
+      const distance = haversine(
+        { lat: driver.currentLat, lon: driver.currentLng },
+        { lat: reservation.pickupLat, lon: reservation.pickupLng },
+      );
+
+      results.push({ reservation, distance });
+    }
+
+    // Sort closest first
+    results.sort((a, b) => a.distance - b.distance);
+
+    return results;
   }
 }

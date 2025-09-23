@@ -47,6 +47,7 @@
     "dotenv": "^17.2.2",
     "eslint-plugin-import": "^2.32.0",
     "express": "^5.1.0",
+    "haversine-distance": "^1.2.4",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.7.2",
     "multer": "^2.0.2",

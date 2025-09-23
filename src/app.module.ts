@@ -10,6 +10,7 @@ import { CustomerProfileAppService } from './application/service/customer-profil
 import { DriverCommissionAppService } from './application/service/driver-commission.app.service';
 import { DriverDocumentAppService } from './application/service/driver-document.app.service';
 import { DriverProfileAppService } from './application/service/driver-profile.app.service';
+import { ReservationAppService } from './application/service/reservation.app.service';
 import { UserAccessibilityAppService } from './application/service/user-accessibility.app.service';
 import { UserAppService } from './application/service/user.app.service';
 import { VehicleAccessibilityAppService } from './application/service/vehicle-accessibility.app.service';
@@ -24,6 +25,7 @@ import { CustomerProfileController } from './infrastructure/controller/customer-
 import { DriverCommissionController } from './infrastructure/controller/driver-commission.controller';
 import { DriverDocumentController } from './infrastructure/controller/driver-document.controller';
 import { DriverProfileController } from './infrastructure/controller/driver-profile.controller';
+import { ReservationController } from './infrastructure/controller/reservation.controller';
 import { UserAccessibilityController } from './infrastructure/controller/user-accessibility.controller';
 import { UserController } from './infrastructure/controller/user.controller';
 import { VehicleAccessibilityController } from './infrastructure/controller/vehicle-accessibility.controller';
@@ -35,6 +37,7 @@ import { CustomerProfileRepository } from './infrastructure/repository/customer-
 import { DriverCommissionRepository } from './infrastructure/repository/driver-commission.repository';
 import { DriverDocumentRepository } from './infrastructure/repository/driver-document.repository';
 import { DriverProfileRepository } from './infrastructure/repository/driver-profile.repository';
+import { ReservationRepository } from './infrastructure/repository/reservation.repository';
 import { UserAccessibilityRepository } from './infrastructure/repository/user-accessibility.repository';
 import { UserRepository } from './infrastructure/repository/user.repository';
 import { VehicleAccessibilityRepository } from './infrastructure/repository/vehicle-accessibility.repository';
@@ -60,6 +63,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     UserAccessibilityController,
     VehicleAccessibilityController,
     DriverCommissionController,
+    ReservationController,
   ],
 
   providers: [
@@ -80,6 +84,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     UserAccessibilityRepository,
     VehicleAccessibilityRepository,
     DriverCommissionRepository,
+    ReservationRepository,
 
     /* App Service Providers */
     UserAppService,
@@ -92,6 +97,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     UserAccessibilityAppService,
     VehicleAccessibilityAppService,
     DriverCommissionAppService,
+    ReservationAppService,
   ],
 })
 export class AppModule {}

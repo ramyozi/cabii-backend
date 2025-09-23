@@ -11,6 +11,7 @@ import {
 
 import { DriverCommission } from './driver-commission.entity';
 import { DriverDocument } from './driver-document.entity';
+import { Reservation } from './reservation.entity';
 import { User } from './user.entity';
 import { Vehicle } from './vehicle.entity';
 
@@ -32,6 +33,9 @@ export class DriverProfile {
     cascade: true,
   })
   vehicles: Vehicle[];
+
+  @OneToMany(() => Reservation, (res) => res.driver)
+  reservations: Reservation[];
 
   @OneToMany(() => DriverDocument, (document) => document.driver, {
     cascade: true,

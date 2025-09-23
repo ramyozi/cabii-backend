@@ -65,11 +65,13 @@ export class UserController {
     status: HttpStatus.OK,
   })
   @Get(':userId/accessibility-features')
-  async getAccessibilityFeatures(
+  async getUserAccessibilityFeatures(
     @Param('userId', new ParseUUIDPipe()) userId: string,
   ) {
     const list =
-      await this.userAccessibilityAppService.getAccessibilityFeatures(userId);
+      await this.userAccessibilityAppService.getAccessibilityFeaturesByUserId(
+        userId,
+      );
 
     return {
       statusCode: HttpStatus.OK,

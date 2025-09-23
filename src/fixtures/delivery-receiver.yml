@@ -1,0 +1,16 @@
+entity: DeliveryReceiver
+items:
+  receiver1:
+    name: 'John Doe'
+    phone: '+447911123456'
+    address: '10 Downing Street, London'
+
+  receiver2:
+    name: 'Maria Gonzalez'
+    phone: '+12125552368'
+    address: '123 Broadway, New York'
+
+  receiver3:
+    name: 'Karim Ben Ali'
+    phone: '+33699887766'
+    email: null

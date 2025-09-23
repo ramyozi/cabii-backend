@@ -8,9 +8,9 @@ items:
     status: 'PENDING'
     pickupLat: 48.8566
     pickupLng: 2.3522
-    dropoffLat: 48.864716
-    dropoffLng: 2.349014
-    scheduledAt: '2025-09-24T09:00:00Z'
+    dropoffLat: 48.8647
+    dropoffLng: 2.3490
+    scheduledAt: '2025-09-25T10:00:00Z'
 
   reservation2:
     customer: '@customer2'
@@ -20,18 +20,18 @@ items:
     status: 'ACCEPTED'
     pickupLat: 51.5074
     pickupLng: -0.1278
-    dropoffLat: 51.515419
-    dropoffLng: -0.141099
-    scheduledAt: '2025-09-25T14:30:00Z'
+    dropoffLat: 51.5095
+    dropoffLng: -0.1180
+    scheduledAt: '2025-09-25T12:30:00Z'
 
   reservation3:
     customer: '@customer1'
     driver: null
     vehicle: '@vehicle1'
-    type: 'RIDE'
+    type: 'DELIVERY'
     status: 'PENDING'
     pickupLat: 40.7128
     pickupLng: -74.0060
-    dropoffLat: 40.73061
-    dropoffLng: -73.935242
-    scheduledAt: '2025-09-26T18:00:00Z'
+    dropoffLat: 40.7306
+    dropoffLng: -73.9352
+    scheduledAt: '2025-09-26T15:00:00Z'

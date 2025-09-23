@@ -1,0 +1,29 @@
+entity: DeliveryObject
+items:
+  object1:
+    reservation: '@reservation2'
+    receiver: '@receiver1'
+    label: 'Wheelchair'
+    weight: 15.5
+    description: 'Foldable wheelchair for delivery'
+
+  object2:
+    reservation: '@reservation2'
+    receiver: '@receiver1'
+    label: 'Medical Box'
+    weight: 5.2
+    description: 'Box containing medical supplies'
+
+  object3:
+    reservation: '@reservation3'
+    receiver: '@receiver2'
+    label: 'Crutches'
+    weight: 3.0
+    description: 'Pair of aluminum crutches'
+
+  object4:
+    reservation: '@reservation3'
+    receiver: '@receiver3'
+    label: 'Personal Package'
+    weight: 1.5
+    description: 'Small package with personal items'

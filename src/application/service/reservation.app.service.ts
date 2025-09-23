@@ -25,12 +25,15 @@ export class ReservationAppService {
 
   async create(dto: ReservationCreateRequestDto): Promise<Reservation> {
     const customer = await this.customerRepo.getOneById(dto.customerId);
-    const vehicle = await this.vehicleRepo.getOneById(dto.vehicleId);
     const driver = dto.driverId
       ? await this.driverRepo.getOneById(dto.driverId)
       : undefined;
 
-    if (driver && vehicle.driver.id !== driver.id) {
+    const vehicle = dto.vehicleId
+      ? await this.vehicleRepo.getOneById(dto.vehicleId)
+      : undefined;
+
+    if (driver && vehicle && vehicle.driver.id !== driver.id) {
       throw new ReservationDriverVehicleMismatchException();
     }
 
@@ -70,7 +73,7 @@ export class ReservationAppService {
       if (dto.vehicleId) {
         const vehicle = await this.vehicleRepo.getOneById(dto.vehicleId);
 
-        if (vehicle.driver.id !== driver.id) {
+        if (reservation.driver && vehicle.driver.id !== reservation.driver.id) {
           throw new ReservationDriverVehicleMismatchException();
         }
 

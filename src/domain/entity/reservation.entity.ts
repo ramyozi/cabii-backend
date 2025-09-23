@@ -39,11 +39,11 @@ export class Reservation {
   driver?: DriverProfile;
 
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.reservations, {
-    nullable: false,
-    onDelete: 'CASCADE',
+    nullable: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'vehicle_id' })
-  vehicle: Vehicle;
+  vehicle?: Vehicle;
 
   @ApiProperty({ enum: ReservationTypeEnum })
   @Column({ type: 'enum', enum: ReservationTypeEnum })

@@ -28,10 +28,6 @@ export class DeliveryReceiver {
   @Column({ type: 'varchar', length: 255, nullable: true })
   email?: string;
 
-  @ApiProperty()
-  @Column({ type: 'varchar', length: 500, nullable: true })
-  address?: string;
-
   @OneToMany(() => DeliveryObject, (obj) => obj.receiver)
   objects: DeliveryObject[];
 

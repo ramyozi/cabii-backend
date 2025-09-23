@@ -1,7 +1,6 @@
 entity: Vehicle
 items:
   vehicle1:
-    driver: '@driver1'
     brand: 'Toyota'
     model: 'Corolla'
     plate: 'ABC-1234'
@@ -14,7 +13,6 @@ items:
     category: '@category1'
 
   vehicle2:
-    driver: '@driver2'
     brand: 'Mercedes'
     model: 'Sprinter'
     plate: 'XYZ-9876'

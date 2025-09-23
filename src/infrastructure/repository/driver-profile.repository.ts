@@ -27,6 +27,7 @@ export class DriverProfileRepository extends Repository<DriverProfile> {
 
   async getOneById(driverProfileId: string) {
     const query = this.createQueryBuilder('driverProfile')
+      .leftJoinAndSelect('driverProfile.user', 'user')
       .leftJoinAndSelect('driverProfile.activeVehicle', 'activeVehicle')
       .leftJoinAndSelect('activeVehicle.category', 'category')
       .where('driverProfile.id = :driverProfileId', {

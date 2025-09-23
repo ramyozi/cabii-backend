@@ -22,7 +22,7 @@ import {
 } from '../../application/service/auth.service';
 import { Time } from '../common/time.utils';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 

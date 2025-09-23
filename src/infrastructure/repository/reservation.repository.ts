@@ -23,7 +23,9 @@ export class ReservationRepository extends Repository<Reservation> {
   async getOneById(id: string): Promise<Reservation> {
     const res = await this.createQueryBuilder('res')
       .leftJoinAndSelect('res.customer', 'customer')
+      .leftJoinAndSelect('customer.user', 'customerUser')
       .leftJoinAndSelect('res.driver', 'driver')
+      .leftJoinAndSelect('driver.user', 'driverUser')
       .leftJoinAndSelect('res.vehicle', 'vehicle')
       .where('res.id = :id', { id })
       .getOne();

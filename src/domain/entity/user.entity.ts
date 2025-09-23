@@ -16,6 +16,7 @@ import { AuthSession } from './auth-session.entity';
 import { CustomerProfile } from './customer-profile.entity';
 import { DriverProfile } from './driver-profile.entity';
 import { UserAccessibility } from './user-accessibility.entity';
+import { Hash } from '../../infrastructure/common/hash.utils';
 import { RoleEnum } from '../enums/role.enum';
 
 @Entity()
@@ -85,4 +86,10 @@ export class User {
 
   @OneToMany(() => UserAccessibility, (ua) => ua.user, { cascade: true })
   accessibilityPreferences: UserAccessibility[];
+
+  private setPassword(password: string): void {
+    this.password = Hash.from(
+      `${process.env.PASSWORD_SALT}${password}`,
+    ).sha512();
+  }
 }

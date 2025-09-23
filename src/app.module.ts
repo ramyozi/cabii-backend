@@ -36,6 +36,7 @@ import { UserController } from './infrastructure/controller/user.controller';
 import { VehicleAccessibilityController } from './infrastructure/controller/vehicle-accessibility.controller';
 import { VehicleCategoryController } from './infrastructure/controller/vehicle-category.controller';
 import { VehicleController } from './infrastructure/controller/vehicle.controller';
+import { DriverLocationGateway } from './infrastructure/gateway/driver-location.gateway';
 import { AccessibilityFeatureRepository } from './infrastructure/repository/accessibility-feature.repository';
 import { AuthSessionRepository } from './infrastructure/repository/auth-session.repository';
 import { CustomerProfileRepository } from './infrastructure/repository/customer-profile.repository';
@@ -112,6 +113,8 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     ReservationAppService,
     ReservationExecutionAppService,
     DriverLocationAppService,
+
+    DriverLocationGateway,
   ],
 })
 export class AppModule {}

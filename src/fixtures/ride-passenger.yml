@@ -1,0 +1,15 @@
+entity: RidePassenger
+items:
+  passenger1:
+    reservation: '@reservation1'
+    name: 'Sara Ali'
+    phone: '+33612345678'
+    age: 28
+    needsAssistance: true
+
+  passenger2:
+    reservation: '@reservation1'
+    name: 'Ahmed Hassan'
+    phone: '+33687654321'
+    age: 35
+    needsAssistance: false

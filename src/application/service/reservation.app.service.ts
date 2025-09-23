@@ -2,80 +2,155 @@ import { Injectable } from '@nestjs/common';
 
 import { Reservation } from '../../domain/entity/reservation.entity';
 import { ReservationStatusEnum } from '../../domain/enums/reservation-status.enum';
-import { ReservationInvalidStateException } from '../../domain/exception/reservation/reservation-invalid-state.exception';
+import { ReservationAlreadyCompletedException } from '../../domain/exception/reservation/reservation-already-completed.exception';
+import { ReservationCannotCancelException } from '../../domain/exception/reservation/reservation-cannot-cancel.exception';
+import { ReservationDriverVehicleMismatchException } from '../../domain/exception/reservation/reservation-driver-vehicle-mismatch.exception';
+import { ReservationInvalidStatusTransitionException } from '../../domain/exception/reservation/reservation-invalid-status-transition.exception';
+import { CustomerProfileRepository } from '../../infrastructure/repository/customer-profile.repository';
 import { DriverProfileRepository } from '../../infrastructure/repository/driver-profile.repository';
 import { ReservationRepository } from '../../infrastructure/repository/reservation.repository';
-import { UserRepository } from '../../infrastructure/repository/user.repository';
 import { VehicleRepository } from '../../infrastructure/repository/vehicle.repository';
 import { ListBuilder, ListInterface } from '../common/list';
 import { ReservationCreateRequestDto } from '../dto/reservation/reservation-create-request.dto';
-import { ReservationUpdateStatusRequestDto } from '../dto/reservation/reservation-update-status-request.dto';
+import { ReservationUpdateRequestDto } from '../dto/reservation/reservation-update-request.dto';
 
 @Injectable()
 export class ReservationAppService {
   constructor(
-    private readonly reservationRepository: ReservationRepository,
-    private readonly userRepository: UserRepository,
-    private readonly driverProfileRepository: DriverProfileRepository,
-    private readonly vehicleRepository: VehicleRepository,
+    private readonly reservationRepo: ReservationRepository,
+    private readonly customerRepo: CustomerProfileRepository,
+    private readonly driverRepo: DriverProfileRepository,
+    private readonly vehicleRepo: VehicleRepository,
   ) {}
 
-  async create(
-    userId: string,
-    dto: ReservationCreateRequestDto,
+  async create(dto: ReservationCreateRequestDto): Promise<Reservation> {
+    const customer = await this.customerRepo.getOneById(dto.customerId);
+    const vehicle = await this.vehicleRepo.getOneById(dto.vehicleId);
+    const driver = dto.driverId
+      ? await this.driverRepo.getOneById(dto.driverId)
+      : undefined;
+
+    if (driver && vehicle.driver.id !== driver.id) {
+      throw new ReservationDriverVehicleMismatchException();
+    }
+
+    const reservation = new Reservation();
+
+    reservation.customer = customer;
+    reservation.vehicle = vehicle;
+    reservation.driver = driver;
+    reservation.type = dto.type;
+    reservation.pickupLat = dto.pickupLat;
+    reservation.pickupLng = dto.pickupLng;
+    reservation.dropoffLat = dto.dropoffLat;
+    reservation.dropoffLng = dto.dropoffLng;
+    reservation.scheduledAt = dto.scheduledAt;
+
+    return await this.reservationRepo.save(reservation);
+  }
+
+  async update(
+    id: string,
+    dto: ReservationUpdateRequestDto,
   ): Promise<Reservation> {
-    const user = await this.userRepository.getOneById(userId);
+    const reservation = await this.reservationRepo.getOneById(id);
 
-    const r = new Reservation();
+    if (reservation.status === ReservationStatusEnum.Completed) {
+      throw new ReservationAlreadyCompletedException();
+    }
 
-    r.user = user;
-    r.type = dto.type;
-    r.status = ReservationStatusEnum.Pending;
-    r.pickupLat = dto.pickupLat;
-    r.pickupLng = dto.pickupLng;
-    r.dropoffLat = dto.dropoffLat;
-    r.dropoffLng = dto.dropoffLng;
-    r.scheduledAt = dto.scheduledAt ?? null;
+    if (dto.status && dto.status !== reservation.status) {
+      this.validateStatusTransition(reservation.status, dto.status);
+      reservation.status = dto.status;
+    }
 
-    // TODO: placeholder estimation
-    r.priceEstimate = null;
+    if (dto.driverId) {
+      const driver = await this.driverRepo.getOneById(dto.driverId);
 
-    return await this.reservationRepository.save(r);
+      if (dto.vehicleId) {
+        const vehicle = await this.vehicleRepo.getOneById(dto.vehicleId);
+
+        if (vehicle.driver.id !== driver.id) {
+          throw new ReservationDriverVehicleMismatchException();
+        }
+
+        reservation.vehicle = vehicle;
+      }
+
+      reservation.driver = driver;
+    } else if (dto.vehicleId) {
+      throw new ReservationDriverVehicleMismatchException();
+    }
+
+    reservation.scheduledAt = dto.scheduledAt ?? reservation.scheduledAt;
+
+    return await this.reservationRepo.save(reservation);
+  }
+
+  private validateStatusTransition(
+    current: ReservationStatusEnum,
+    next: ReservationStatusEnum,
+  ) {
+    const allowedTransitions: Record<
+      ReservationStatusEnum,
+      ReservationStatusEnum[]
+    > = {
+      [ReservationStatusEnum.Pending]: [
+        ReservationStatusEnum.Accepted,
+        ReservationStatusEnum.Cancelled,
+      ],
+      [ReservationStatusEnum.Accepted]: [
+        ReservationStatusEnum.InProgress,
+        ReservationStatusEnum.Cancelled,
+      ],
+      [ReservationStatusEnum.InProgress]: [ReservationStatusEnum.Completed],
+      [ReservationStatusEnum.Completed]: [],
+      [ReservationStatusEnum.Cancelled]: [],
+    };
+
+    if (!allowedTransitions[current].includes(next)) {
+      throw new ReservationInvalidStatusTransitionException(current, next);
+    }
+  }
+
+  async cancel(id: string): Promise<Reservation> {
+    const reservation = await this.reservationRepo.getOneById(id);
+
+    if (
+      ![ReservationStatusEnum.Pending, ReservationStatusEnum.Accepted].includes(
+        reservation.status,
+      )
+    ) {
+      throw new ReservationCannotCancelException(reservation.status);
+    }
+
+    reservation.status = ReservationStatusEnum.Cancelled;
+    return await this.reservationRepo.save(reservation);
   }
 
   async getById(id: string): Promise<Reservation> {
-    return this.reservationRepository.getOneById(id);
+    return await this.reservationRepo.getOneById(id);
   }
 
   async getList(): Promise<ListInterface<Reservation>> {
-    const [rows, count] = await this.reservationRepository.getAll();
+    const [reservations, count] = await this.reservationRepo.getAll();
 
-    return new ListBuilder(rows, count).build();
+    return new ListBuilder(reservations, count).build();
   }
 
-  async getByUser(userId: string): Promise<ListInterface<Reservation>> {
-    const [rows, count] =
-      await this.reservationRepository.getAllByUserId(userId);
+  async getListByCustomer(
+    customerId: string,
+  ): Promise<ListInterface<Reservation>> {
+    const [reservations, count] =
+      await this.reservationRepo.getAllByCustomer(customerId);
 
-    return new ListBuilder(rows, count).build();
+    return new ListBuilder(reservations, count).build();
   }
 
-  async updateStatus(
-    id: string,
-    dto: ReservationUpdateStatusRequestDto,
-  ): Promise<Reservation> {
-    const r = await this.reservationRepository.getOneById(id);
+  async getListByDriver(driverId: string): Promise<ListInterface<Reservation>> {
+    const [reservations, count] =
+      await this.reservationRepo.getAllByDriver(driverId);
 
-    if (
-      r.status === ReservationStatusEnum.Completed ||
-      r.status === ReservationStatusEnum.Cancelled
-    ) {
-      throw new ReservationInvalidStateException(
-        `Cannot transition from ${r.status}`,
-      );
-    }
-
-    r.status = dto.status;
-    return await this.reservationRepository.save(r);
+    return new ListBuilder(reservations, count).build();
   }
 }

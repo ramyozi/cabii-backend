@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 
 import { DriverProfile } from './driver-profile.entity';
+import { Reservation } from './reservation.entity';
 import { VehicleAccessibility } from './vehicle-accessibility.entity';
 import { VehicleCategory } from './vehicle-category.entity';
 import { VehicleStatusEnum } from '../enums/vehicle-status.enum';
@@ -71,4 +72,7 @@ export class Vehicle {
 
   @OneToMany(() => VehicleAccessibility, (va) => va.vehicle, { cascade: true })
   accessibilityOptions: VehicleAccessibility[];
+
+  @OneToMany(() => Reservation, (res) => res.vehicle)
+  reservations: Reservation[];
 }

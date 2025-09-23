@@ -1,9 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsOptional } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsUUID } from 'class-validator';
 
 import { ReservationTypeEnum } from '../../../domain/enums/reservation-type.enum';
 
 export class ReservationCreateRequestDto {
+  @ApiProperty()
+  @IsUUID()
+  customerId: string;
+
+  @ApiProperty({ required: false })
+  @IsUUID()
+  @IsOptional()
+  driverId?: string;
+
+  @ApiProperty()
+  @IsUUID()
+  vehicleId: string;
+
   @ApiProperty({ enum: ReservationTypeEnum })
   @IsEnum(ReservationTypeEnum)
   type: ReservationTypeEnum;

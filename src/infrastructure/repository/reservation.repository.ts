@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { Reservation } from '../../domain/entity/reservation.entity';
-import { ReservationStatusEnum } from '../../domain/enums/reservation-status.enum';
 import { ReservationNotFoundException } from '../../domain/exception/reservation/reservation-not-found.exception';
 
 @Injectable()
@@ -13,7 +12,7 @@ export class ReservationRepository extends Repository<Reservation> {
   ) {
     if (!dataSource && !entityManager) {
       throw new Error(
-        'Cannot instantiate repository without dataSource or entityManager',
+        'Cannot instantiate ReservationRepository without dataSource or entityManager',
       );
     }
 
@@ -21,47 +20,37 @@ export class ReservationRepository extends Repository<Reservation> {
   }
 
   async getOneById(id: string): Promise<Reservation> {
-    const res = await this.createQueryBuilder('r')
-      .leftJoinAndSelect('r.user', 'user')
-      .leftJoinAndSelect('r.driver', 'driver')
-      .leftJoinAndSelect('r.vehicle', 'vehicle')
-      .where('r.id = :id', { id })
+    const res = await this.createQueryBuilder('res')
+      .leftJoinAndSelect('res.customer', 'customer')
+      .leftJoinAndSelect('res.driver', 'driver')
+      .leftJoinAndSelect('res.vehicle', 'vehicle')
+      .where('res.id = :id', { id })
       .getOne();
 
-    if (!res)
-      throw new ReservationNotFoundException(
-        `Reservation with Id ${id} not found`,
-      );
+    if (!res) throw new ReservationNotFoundException(id);
 
     return res;
   }
 
   async getAll(): Promise<[Reservation[], number]> {
-    const qb = this.createQueryBuilder('r')
-      .leftJoinAndSelect('r.user', 'user')
-      .leftJoinAndSelect('r.driver', 'driver')
-      .leftJoinAndSelect('r.vehicle', 'vehicle')
-      .orderBy('r.createdAt', 'DESC');
-
-    return qb.getManyAndCount();
+    return this.createQueryBuilder('res')
+      .leftJoinAndSelect('res.customer', 'customer')
+      .leftJoinAndSelect('res.driver', 'driver')
+      .leftJoinAndSelect('res.vehicle', 'vehicle')
+      .getManyAndCount();
   }
 
-  async getAllByUserId(userId: string): Promise<[Reservation[], number]> {
-    const qb = this.createQueryBuilder('r')
-      .leftJoin('r.user', 'user')
-      .where('user.id = :userId', { userId })
-      .orderBy('r.createdAt', 'DESC');
-
-    return qb.getManyAndCount();
+  async getAllByCustomer(customerId: string): Promise<[Reservation[], number]> {
+    return this.createQueryBuilder('res')
+      .leftJoinAndSelect('res.customer', 'customer')
+      .where('customer.id = :customerId', { customerId })
+      .getManyAndCount();
   }
 
-  async getAllByStatus(
-    status: ReservationStatusEnum,
-  ): Promise<[Reservation[], number]> {
-    const qb = this.createQueryBuilder('r')
-      .where('r.status = :status', { status })
-      .orderBy('r.createdAt', 'DESC');
-
-    return qb.getManyAndCount();
+  async getAllByDriver(driverId: string): Promise<[Reservation[], number]> {
+    return this.createQueryBuilder('res')
+      .leftJoinAndSelect('res.driver', 'driver')
+      .where('driver.id = :driverId', { driverId })
+      .getManyAndCount();
   }
 }

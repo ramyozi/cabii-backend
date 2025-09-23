@@ -7,34 +7,40 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Index,
 } from 'typeorm';
 
+import { CustomerProfile } from './customer-profile.entity';
 import { DriverProfile } from './driver-profile.entity';
-import { User } from './user.entity';
 import { Vehicle } from './vehicle.entity';
 import { ReservationStatusEnum } from '../enums/reservation-status.enum';
 import { ReservationTypeEnum } from '../enums/reservation-type.enum';
 
 @Entity()
-@Index(['user', 'status'])
-@Index(['driver', 'status'])
 export class Reservation {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @ManyToOne(() => CustomerProfile, (customer) => customer.reservations, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'customer_id' })
+  customer: CustomerProfile;
 
-  @ManyToOne(() => DriverProfile, { nullable: true })
+  @ManyToOne(() => DriverProfile, (driver) => driver.reservations, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'driver_id' })
-  driver?: DriverProfile | null;
+  driver?: DriverProfile;
 
-  @ManyToOne(() => Vehicle, { nullable: true })
+  @ManyToOne(() => Vehicle, (vehicle) => vehicle.reservations, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'vehicle_id' })
-  vehicle?: Vehicle | null;
+  vehicle: Vehicle;
 
   @ApiProperty({ enum: ReservationTypeEnum })
   @Column({ type: 'enum', enum: ReservationTypeEnum })
@@ -64,17 +70,9 @@ export class Reservation {
   @Column({ type: 'decimal', precision: 10, scale: 6 })
   dropoffLng: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => Date, required: false })
   @Column({ type: 'timestamptz', nullable: true })
-  scheduledAt?: Date | null;
-
-  @ApiProperty()
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  priceEstimate?: number | null;
-
-  @ApiProperty()
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  finalPrice?: number | null;
+  scheduledAt?: Date;
 
   @ApiProperty({ type: () => Date })
   @CreateDateColumn({ type: 'timestamptz' })

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -19,10 +20,16 @@ import { instanceToPlain } from 'class-transformer';
 
 import { ReservationAssignDriverDto } from '../../application/dto/reservation/reservation-assign-driver.dto';
 import { ReservationCreateRequestDto } from '../../application/dto/reservation/reservation-create-request.dto';
+import {
+  EtaUpdateDto,
+  PackageActionDto,
+  PassengerOnBoardDto,
+} from '../../application/dto/reservation/reservation-execution.dto';
 import { ReservationListResponseDto } from '../../application/dto/reservation/reservation-list-response.dto';
 import { ReservationRescheduleDto } from '../../application/dto/reservation/reservation-reschedule.dto';
 import { ReservationResponseDto } from '../../application/dto/reservation/reservation-response.dto';
 import { ReservationUpdateRequestDto } from '../../application/dto/reservation/reservation-update-request.dto';
+import { ReservationExecutionAppService } from '../../application/service/reservation-execution.app.service';
 import { ReservationAppService } from '../../application/service/reservation.app.service';
 import { Reservation } from '../../domain/entity/reservation.entity';
 
@@ -30,7 +37,10 @@ import { Reservation } from '../../domain/entity/reservation.entity';
 @Controller('reservation')
 @ApiBearerAuth('JWT-auth')
 export class ReservationController {
-  constructor(private readonly reservationAppService: ReservationAppService) {}
+  constructor(
+    private readonly reservationAppService: ReservationAppService,
+    private readonly reservationExecService: ReservationExecutionAppService,
+  ) {}
 
   @ApiOperation({ summary: 'Create a reservation' })
   @ApiResponse({ type: Reservation, status: HttpStatus.CREATED })
@@ -223,6 +233,127 @@ export class ReservationController {
     return {
       statusCode: HttpStatus.OK,
       ...instanceToPlain(reservations, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Driver arrived at pickup point' })
+  @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Patch(':id/arrived')
+  async driverArrived(@Param('id', new ParseUUIDPipe()) id: string) {
+    const reservation = await this.reservationExecService.driverArrived(id);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(reservation, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Passenger on board (ride only)' })
+  @ApiBody({ type: PassengerOnBoardDto })
+  @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Patch(':id/passenger-onboard')
+  async passengerOnBoard(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new ValidationPipe()) dto: PassengerOnBoardDto,
+  ) {
+    const reservation = await this.reservationExecService.passengerOnBoard(
+      id,
+      dto,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(reservation, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Start trip' })
+  @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Patch(':id/start')
+  async startTrip(@Param('id', new ParseUUIDPipe()) id: string) {
+    const reservation = await this.reservationExecService.startTrip(id);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(reservation, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Complete trip' })
+  @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Patch(':id/complete')
+  async completeTrip(@Param('id', new ParseUUIDPipe()) id: string) {
+    const reservation = await this.reservationExecService.completeTrip(id);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(reservation, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Package picked up (delivery only)' })
+  @ApiBody({ type: PackageActionDto })
+  @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Patch(':id/package-picked-up')
+  async packagePickedUp(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new ValidationPipe()) dto: PackageActionDto,
+  ) {
+    const reservation = await this.reservationExecService.packagePickedUp(
+      id,
+      dto,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(reservation, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Package delivered (delivery only)' })
+  @ApiBody({ type: PackageActionDto })
+  @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Patch(':id/package-delivered')
+  async packageDelivered(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new ValidationPipe()) dto: PackageActionDto,
+  ) {
+    const reservation = await this.reservationExecService.packageDelivered(
+      id,
+      dto,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(reservation, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Update ETA and distance to destination' })
+  @ApiBody({ type: EtaUpdateDto })
+  @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Patch(':id/eta')
+  async etaUpdated(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new ValidationPipe()) dto: EtaUpdateDto,
+  ) {
+    const reservation = await this.reservationExecService.etaUpdated(id, dto);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(reservation, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'List events for a reservation' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @Get(':id/events')
+  async getEvents(@Param('id', new ParseUUIDPipe()) id: string) {
+    const events = await this.reservationExecService.getEvents(id);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(events, { strategy: 'exposeAll' }),
     };
   }
 }

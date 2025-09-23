@@ -13,6 +13,7 @@ import {
 import { CustomerProfile } from './customer-profile.entity';
 import { DeliveryObject } from './delivery-object.entity';
 import { DriverProfile } from './driver-profile.entity';
+import { ReservationEvent } from './reservation-event.entity';
 import { RidePassenger } from './ride-passenger.entity';
 import { Vehicle } from './vehicle.entity';
 import { ReservationStatusEnum } from '../enums/reservation-status.enum';
@@ -90,4 +91,7 @@ export class Reservation {
 
   @OneToMany(() => RidePassenger, (p) => p.reservation, { cascade: true })
   passengers?: RidePassenger[];
+
+  @OneToMany(() => ReservationEvent, (e) => e.reservation)
+  events: ReservationEvent[];
 }

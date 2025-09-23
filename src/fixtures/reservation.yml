@@ -1,0 +1,37 @@
+entity: Reservation
+items:
+  reservation1:
+    customer: '@customer1'
+    driver: '@driver1'
+    vehicle: '@vehicle1'
+    type: 'RIDE'
+    status: 'PENDING'
+    pickupLat: 48.8566
+    pickupLng: 2.3522
+    dropoffLat: 48.864716
+    dropoffLng: 2.349014
+    scheduledAt: '2025-09-24T09:00:00Z'
+
+  reservation2:
+    customer: '@customer2'
+    driver: '@driver2'
+    vehicle: '@vehicle2'
+    type: 'DELIVERY'
+    status: 'ACCEPTED'
+    pickupLat: 51.5074
+    pickupLng: -0.1278
+    dropoffLat: 51.515419
+    dropoffLng: -0.141099
+    scheduledAt: '2025-09-25T14:30:00Z'
+
+  reservation3:
+    customer: '@customer1'
+    driver: null
+    vehicle: '@vehicle1'
+    type: 'RIDE'
+    status: 'PENDING'
+    pickupLat: 40.7128
+    pickupLng: -74.0060
+    dropoffLat: 40.73061
+    dropoffLng: -73.935242
+    scheduledAt: '2025-09-26T18:00:00Z'

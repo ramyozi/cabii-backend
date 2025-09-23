@@ -9,6 +9,7 @@ items:
     currentLat: 48.8566
     currentLng: 2.3522
     lastSeenAt: '2025-09-20T12:00:00Z'
+    activeVehicle: '@vehicle1'
 
   driver2:
     user: '@user3'
@@ -19,3 +20,4 @@ items:
     currentLat: 51.5074
     currentLng: -0.1278
     lastSeenAt: '2025-09-19T15:30:00Z'
+    activeVehicle: '@vehicle2'

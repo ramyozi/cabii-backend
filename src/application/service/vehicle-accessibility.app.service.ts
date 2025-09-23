@@ -62,7 +62,7 @@ export class VehicleAccessibilityAppService {
     await this.vehicleAccessibilityRepository.remove(vehicleAcc);
   }
 
-  async getAccessibilityFeatures(
+  async getAccessibilityFeaturesByVehicleId(
     vehicleId: string,
   ): Promise<ListInterface<AccessibilityFeature>> {
     const [features, count] =

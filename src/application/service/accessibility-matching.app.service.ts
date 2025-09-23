@@ -42,15 +42,12 @@ export class AccessibilityMatchingAppService {
       return { isCompatible: true, missingFeatures: [] };
     }
 
-    const missing: string[] = [];
-
-    for (const uf of userFeatures) {
-      const match = vehicleFeatures.find((vf) => vf.id === uf.id);
-
-      if (!match) {
-        missing.push(uf.name);
-      }
-    }
+    const vehicleSet = new Set(
+      vehicleFeatures.map((f) => f.name.toLowerCase()),
+    );
+    const missing = userFeatures
+      .map((f) => f.name)
+      .filter((need) => !vehicleSet.has(need.toLowerCase()));
 
     return {
       isCompatible: missing.length === 0,

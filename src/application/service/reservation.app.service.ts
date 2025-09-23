@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Reservation } from '../../domain/entity/reservation.entity';
 import { ReservationStatusEnum } from '../../domain/enums/reservation-status.enum';
+import { ReservationAccessibilityMismatchException } from '../../domain/exception/accessibility/reservation-accessibility-mismatch.exception';
 import { ReservationAlreadyCompletedException } from '../../domain/exception/reservation/reservation-already-completed.exception';
 import { ReservationCannotCancelException } from '../../domain/exception/reservation/reservation-cannot-cancel.exception';
 import { ReservationDriverVehicleMismatchException } from '../../domain/exception/reservation/reservation-driver-vehicle-mismatch.exception';
@@ -9,6 +10,8 @@ import { ReservationService } from '../../domain/service/reservation.service';
 import { CustomerProfileRepository } from '../../infrastructure/repository/customer-profile.repository';
 import { DriverProfileRepository } from '../../infrastructure/repository/driver-profile.repository';
 import { ReservationRepository } from '../../infrastructure/repository/reservation.repository';
+import { UserAccessibilityRepository } from '../../infrastructure/repository/user-accessibility.repository';
+import { VehicleAccessibilityRepository } from '../../infrastructure/repository/vehicle-accessibility.repository';
 import { VehicleRepository } from '../../infrastructure/repository/vehicle.repository';
 import { ListBuilder, ListInterface } from '../common/list';
 import { ReservationCreateRequestDto } from '../dto/reservation/reservation-create-request.dto';
@@ -20,7 +23,9 @@ export class ReservationAppService {
     private readonly reservationRepo: ReservationRepository,
     private readonly customerRepo: CustomerProfileRepository,
     private readonly driverRepo: DriverProfileRepository,
-    private readonly vehicleRepo: VehicleRepository,
+    private readonly userAccessibilityRepository: UserAccessibilityRepository,
+    private readonly vehicleRepository: VehicleRepository,
+    private readonly vehicleAccessibilityRepository: VehicleAccessibilityRepository,
     private readonly reservationService: ReservationService,
   ) {}
 
@@ -31,12 +36,15 @@ export class ReservationAppService {
       : undefined;
 
     const vehicle = dto.vehicleId
-      ? await this.vehicleRepo.getOneById(dto.vehicleId)
+      ? await this.vehicleRepository.getOneById(dto.vehicleId)
       : undefined;
 
     if (driver && vehicle && vehicle.driver.id !== driver.id) {
       throw new ReservationDriverVehicleMismatchException();
     }
+
+    // Ensure accessibility requirements are met
+    await this.ensureAccessibilityCompatible(customer.user.id, vehicle?.id);
 
     const reservation = new Reservation();
 
@@ -71,16 +79,19 @@ export class ReservationAppService {
       reservation.status = dto.status;
     }
 
+    let updatedVehicle = reservation.vehicle; // keep track of final vehicle
+
     if (dto.driverId) {
       const driver = await this.driverRepo.getOneById(dto.driverId);
 
       if (dto.vehicleId) {
-        const vehicle = await this.vehicleRepo.getOneById(dto.vehicleId);
+        const vehicle = await this.vehicleRepository.getOneById(dto.vehicleId);
 
         if (reservation.driver && vehicle.driver.id !== reservation.driver.id) {
           throw new ReservationDriverVehicleMismatchException();
         }
 
+        updatedVehicle = vehicle;
         reservation.vehicle = vehicle;
       }
 
@@ -90,6 +101,12 @@ export class ReservationAppService {
     }
 
     reservation.scheduledAt = dto.scheduledAt ?? reservation.scheduledAt;
+
+    // Only check accessibility if we actually have a vehicle
+    await this.ensureAccessibilityCompatible(
+      reservation.customer.user.id,
+      updatedVehicle?.id,
+    );
 
     return await this.reservationRepo.save(reservation);
   }
@@ -142,11 +159,17 @@ export class ReservationAppService {
   ): Promise<Reservation> {
     const reservation = await this.reservationRepo.getOneById(id);
     const driver = await this.driverRepo.getOneById(driverId);
-    const vehicle = await this.vehicleRepo.getOneById(vehicleId);
+    const vehicle = await this.vehicleRepository.getOneById(vehicleId);
 
     if (vehicle.driver.id !== driver.id) {
       throw new ReservationDriverVehicleMismatchException();
     }
+
+    // Accessibility check
+    await this.ensureAccessibilityCompatible(
+      reservation.customer.user.id,
+      vehicle.id,
+    );
 
     reservation.driver = driver;
     reservation.vehicle = vehicle;
@@ -223,5 +246,33 @@ export class ReservationAppService {
       await this.reservationRepo.getHistoryByDriver(driverId);
 
     return new ListBuilder(reservations, count).build();
+  }
+
+  private async ensureAccessibilityCompatible(
+    userId: string,
+    vehicleId?: string,
+  ) {
+    if (!vehicleId) return;
+
+    const [userFeatures] =
+      await this.userAccessibilityRepository.getFeaturesByUserId(userId);
+
+    if (!userFeatures.length) return;
+
+    const [vehicleFeatures] =
+      await this.vehicleAccessibilityRepository.getFeaturesByVehicleId(
+        vehicleId,
+      );
+
+    const vehicleSet = new Set(
+      vehicleFeatures.map((f) => f.name.toLowerCase()),
+    );
+    const missing = userFeatures
+      .map((f) => f.name)
+      .filter((need) => !vehicleSet.has(need.toLowerCase()));
+
+    if (missing.length) {
+      throw new ReservationAccessibilityMismatchException(missing);
+    }
   }
 }

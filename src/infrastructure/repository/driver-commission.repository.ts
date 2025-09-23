@@ -21,7 +21,7 @@ export class DriverCommissionRepository extends Repository<DriverCommission> {
 
   async getOneById(id: string): Promise<DriverCommission> {
     const commission = await this.createQueryBuilder('c')
-      .leftJoinAndSelect('c.driver', 'driver')
+      .innerJoin('c.driver', 'driver')
       .where('c.id = :id', { id })
       .getOne();
 
@@ -37,7 +37,7 @@ export class DriverCommissionRepository extends Repository<DriverCommission> {
     driverId: string,
   ): Promise<DriverCommission> {
     const commission = await this.createQueryBuilder('c')
-      .leftJoinAndSelect('c.driver', 'driver')
+      .innerJoin('c.driver', 'driver')
       .where('driver.id = :driverId', { driverId })
       .andWhere('c.active = :active', { active })
       .getOne();
@@ -55,7 +55,7 @@ export class DriverCommissionRepository extends Repository<DriverCommission> {
     driverId: string,
   ): Promise<[DriverCommission[], number]> {
     const query = this.createQueryBuilder('c')
-      .leftJoinAndSelect('c.driver', 'driver')
+      .innerJoin('c.driver', 'driver')
       .where('driver.id = :driverId', { driverId });
 
     return query.getManyAndCount();

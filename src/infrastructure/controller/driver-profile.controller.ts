@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Req,
   ValidationPipe,
@@ -21,6 +22,7 @@ import Express from 'express';
 import { DriverProfileCreateRequestDto } from '../../application/dto/driver/driver-profile-create-request.dto';
 import { DriverProfileListResponseDto } from '../../application/dto/driver/driver-profile-list-response.dto';
 import { DriverProfileResponseDto } from '../../application/dto/driver/driver-profile-response.dto';
+import { SetActiveVehicleRequestDto } from '../../application/dto/driver/driver-profile-set-active-vehicle-request.dto';
 import { DriverProfileAppService } from '../../application/service/driver-profile.app.service';
 
 @ApiTags('driver-profile')
@@ -91,6 +93,29 @@ export class DriverProfileController {
     return {
       statusCode: HttpStatus.CREATED,
       data: instanceToPlain(createdDriverProfile, {
+        strategy: 'exposeAll',
+        groups: ['default'],
+      }),
+    };
+  }
+
+  @ApiOperation({ summary: 'Set active vehicle for driver.' })
+  @ApiResponse({
+    type: DriverProfileResponseDto,
+    status: HttpStatus.OK,
+  })
+  @Patch(':driverId/active-vehicle')
+  async setActiveVehicle(
+    @Req() req: Express.Request,
+    @Param('driverId', new ParseUUIDPipe()) driverId: string,
+    @Body(new ValidationPipe()) dto: SetActiveVehicleRequestDto,
+  ) {
+    const updatedDriverProfile =
+      await this.driverProfileAppService.setActiveVehicle(driverId, dto);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(updatedDriverProfile, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

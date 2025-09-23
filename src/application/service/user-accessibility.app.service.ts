@@ -58,7 +58,7 @@ export class UserAccessibilityAppService {
     await this.userAccessibilityRepository.remove(userAcc);
   }
 
-  async getAccessibilityFeatures(
+  async getAccessibilityFeaturesByUserId(
     userId: string,
   ): Promise<ListInterface<AccessibilityFeature>> {
     const [features, count] =

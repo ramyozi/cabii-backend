@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AccessibilityFeatureAppService } from './application/service/accessibility-feature.app.service';
+import { AccessibilityMatchingAppService } from './application/service/accessibility-matching.app.service';
 import { AuthSessionService } from './application/service/auth-session.service';
 import { AuthService } from './application/service/auth.service';
 import { CustomerProfileAppService } from './application/service/customer-profile.app.service';
@@ -96,6 +97,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     VehicleCategoryAppService,
     VehicleAppService,
     AccessibilityFeatureAppService,
+    AccessibilityMatchingAppService,
     UserAccessibilityAppService,
     VehicleAccessibilityAppService,
     DriverCommissionAppService,

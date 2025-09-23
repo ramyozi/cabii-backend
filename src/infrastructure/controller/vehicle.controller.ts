@@ -62,11 +62,11 @@ export class VehicleController {
     status: HttpStatus.OK,
   })
   @Get(':vehicleId/accessibility-features')
-  async getAccessibilityFeatures(
+  async getAccessibilityFeaturesByVehicleId(
     @Param('vehicleId', new ParseUUIDPipe()) vehicleId: string,
   ) {
     const list =
-      await this.vehicleAccessibilityAppService.getAccessibilityFeatures(
+      await this.vehicleAccessibilityAppService.getAccessibilityFeaturesByVehicleId(
         vehicleId,
       );
 

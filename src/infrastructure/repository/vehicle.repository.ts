@@ -26,12 +26,11 @@ export class VehicleRepository extends Repository<Vehicle> {
   }
 
   async getOneById(vehicleId: string) {
-    const query = this.createQueryBuilder('vehicle').where(
-      'vehicle.id = :vehicleId',
-      {
+    const query = this.createQueryBuilder('vehicle')
+      .leftJoinAndSelect('vehicle.driver', 'driver')
+      .where('vehicle.id = :vehicleId', {
         vehicleId,
-      },
-    );
+      });
     const vehicle = await query.getOne();
 
     if (!vehicle) {

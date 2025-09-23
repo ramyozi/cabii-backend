@@ -15,7 +15,8 @@ export class ReservationCreateRequestDto {
 
   @ApiProperty()
   @IsUUID()
-  vehicleId: string;
+  @IsOptional()
+  vehicleId?: string;
 
   @ApiProperty({ enum: ReservationTypeEnum })
   @IsEnum(ReservationTypeEnum)

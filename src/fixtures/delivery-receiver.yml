@@ -9,3 +9,8 @@ items:
     name: 'Maria Gonzalez'
     phone: '+12125552368'
     address: '123 Broadway, New York'
+
+  receiver3:
+    name: 'Karim Ben Ali'
+    phone: '+33699887766'
+    email: null

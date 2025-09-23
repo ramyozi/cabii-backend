@@ -53,4 +53,48 @@ export class ReservationRepository extends Repository<Reservation> {
       .where('driver.id = :driverId', { driverId })
       .getManyAndCount();
   }
+
+  async getActiveByCustomer(
+    customerId: string,
+  ): Promise<[Reservation[], number]> {
+    return this.createQueryBuilder('res')
+      .leftJoinAndSelect('res.customer', 'customer')
+      .where('customer.id = :customerId', { customerId })
+      .andWhere('res.status NOT IN (:...statuses)', {
+        statuses: ['Completed', 'Cancelled'],
+      })
+      .getManyAndCount();
+  }
+
+  async getActiveByDriver(driverId: string): Promise<[Reservation[], number]> {
+    return this.createQueryBuilder('res')
+      .leftJoinAndSelect('res.driver', 'driver')
+      .where('driver.id = :driverId', { driverId })
+      .andWhere('res.status NOT IN (:...statuses)', {
+        statuses: ['Completed', 'Cancelled'],
+      })
+      .getManyAndCount();
+  }
+
+  async getHistoryByCustomer(
+    customerId: string,
+  ): Promise<[Reservation[], number]> {
+    return this.createQueryBuilder('res')
+      .leftJoinAndSelect('res.customer', 'customer')
+      .where('customer.id = :customerId', { customerId })
+      .andWhere('res.status IN (:...statuses)', {
+        statuses: ['Completed', 'Cancelled'],
+      })
+      .getManyAndCount();
+  }
+
+  async getHistoryByDriver(driverId: string): Promise<[Reservation[], number]> {
+    return this.createQueryBuilder('res')
+      .leftJoinAndSelect('res.driver', 'driver')
+      .where('driver.id = :driverId', { driverId })
+      .andWhere('res.status IN (:...statuses)', {
+        statuses: ['Completed', 'Cancelled'],
+      })
+      .getManyAndCount();
+  }
 }

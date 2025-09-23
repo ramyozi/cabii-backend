@@ -15,11 +15,6 @@ export class ReservationUpdateRequestDto {
   @IsOptional()
   driverId?: string;
 
-  @ApiProperty({ required: false })
-  @IsUUID()
-  @IsOptional()
-  vehicleId?: string;
-
   @ApiProperty({ required: false, type: String, format: 'date-time' })
   @IsOptional()
   @Type(() => Date)

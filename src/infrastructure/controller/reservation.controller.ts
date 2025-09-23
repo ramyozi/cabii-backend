@@ -111,11 +111,7 @@ export class ReservationController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body(new ValidationPipe()) dto: ReservationAssignDriverDto,
   ) {
-    const reservation = await this.reservationAppService.assignDriver(
-      id,
-      dto.driverId,
-      dto.vehicleId,
-    );
+    const reservation = await this.reservationAppService.assignDriver(id, dto);
 
     return {
       statusCode: HttpStatus.OK,
@@ -354,6 +350,25 @@ export class ReservationController {
     return {
       statusCode: HttpStatus.OK,
       data: instanceToPlain(events, { strategy: 'exposeAll' }),
+    };
+  }
+
+  @ApiOperation({ summary: 'List available reservations for driver' })
+  @ApiResponse({
+    type: ReservationListResponseDto,
+    status: HttpStatus.OK,
+    description: 'Closest compatible reservations for driver',
+  })
+  @Get('available/driver/:driverId')
+  async getAvailableForDriver(
+    @Param('driverId', new ParseUUIDPipe()) driverId: string,
+  ) {
+    const matches =
+      await this.reservationAppService.getAvailableForDriver(driverId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(matches, { strategy: 'exposeAll' }),
     };
   }
 }

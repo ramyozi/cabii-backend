@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -33,6 +34,10 @@ export class DriverProfile {
     cascade: true,
   })
   vehicles: Vehicle[];
+
+  @ManyToOne(() => Vehicle, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'active_vehicle_id' })
+  activeVehicle?: Vehicle;
 
   @OneToMany(() => Reservation, (res) => res.driver)
   reservations: Reservation[];

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { Reservation } from '../../domain/entity/reservation.entity';
+import { ReservationStatusEnum } from '../../domain/enums/reservation-status.enum';
 import { ReservationNotFoundException } from '../../domain/exception/reservation/reservation-not-found.exception';
 
 @Injectable()
@@ -95,6 +96,14 @@ export class ReservationRepository extends Repository<Reservation> {
       .andWhere('res.status IN (:...statuses)', {
         statuses: ['Completed', 'Cancelled'],
       })
+      .getManyAndCount();
+  }
+
+  async getAllPending(): Promise<[Reservation[], number]> {
+    return this.createQueryBuilder('r')
+      .leftJoinAndSelect('r.customer', 'customer')
+      .leftJoinAndSelect('customer.user', 'user')
+      .where('r.status = :status', { status: ReservationStatusEnum.Pending })
       .getManyAndCount();
   }
 }

@@ -5,8 +5,4 @@ export class ReservationAssignDriverDto {
   @ApiProperty()
   @IsUUID()
   driverId: string;
-
-  @ApiProperty()
-  @IsUUID()
-  vehicleId: string;
 }

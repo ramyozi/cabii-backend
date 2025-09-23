@@ -156,4 +156,94 @@ export class ReservationAppService {
 
     return new ListBuilder(reservations, count).build();
   }
+
+  async assignDriver(
+    id: string,
+    driverId: string,
+    vehicleId: string,
+  ): Promise<Reservation> {
+    const reservation = await this.reservationRepo.getOneById(id);
+    const driver = await this.driverRepo.getOneById(driverId);
+    const vehicle = await this.vehicleRepo.getOneById(vehicleId);
+
+    if (vehicle.driver.id !== driver.id) {
+      throw new ReservationDriverVehicleMismatchException();
+    }
+
+    reservation.driver = driver;
+    reservation.vehicle = vehicle;
+    reservation.status = ReservationStatusEnum.Accepted;
+
+    return await this.reservationRepo.save(reservation);
+  }
+
+  async unassignDriver(id: string): Promise<Reservation> {
+    const reservation = await this.reservationRepo.getOneById(id);
+
+    reservation.driver = undefined;
+    reservation.vehicle = undefined;
+    reservation.status = ReservationStatusEnum.Pending;
+
+    return await this.reservationRepo.save(reservation);
+  }
+
+  async reschedule(id: string, newScheduledAt: Date): Promise<Reservation> {
+    const reservation = await this.reservationRepo.getOneById(id);
+
+    reservation.scheduledAt = newScheduledAt;
+
+    return await this.reservationRepo.save(reservation);
+  }
+
+  async markInProgress(id: string): Promise<Reservation> {
+    const reservation = await this.reservationRepo.getOneById(id);
+
+    this.validateStatusTransition(
+      reservation.status,
+      ReservationStatusEnum.InProgress,
+    );
+
+    reservation.status = ReservationStatusEnum.InProgress;
+    return await this.reservationRepo.save(reservation);
+  }
+
+  async markCompleted(id: string): Promise<Reservation> {
+    const reservation = await this.reservationRepo.getOneById(id);
+
+    this.validateStatusTransition(
+      reservation.status,
+      ReservationStatusEnum.Completed,
+    );
+
+    reservation.status = ReservationStatusEnum.Completed;
+    return await this.reservationRepo.save(reservation);
+  }
+
+  async getActiveByCustomer(customerId: string) {
+    const [reservations, count] =
+      await this.reservationRepo.getActiveByCustomer(customerId);
+
+    return new ListBuilder(reservations, count).build();
+  }
+
+  async getActiveByDriver(driverId: string) {
+    const [reservations, count] =
+      await this.reservationRepo.getActiveByDriver(driverId);
+
+    return new ListBuilder(reservations, count).build();
+  }
+
+  async getHistoryByCustomer(customerId: string) {
+    const [reservations, count] =
+      await this.reservationRepo.getHistoryByCustomer(customerId);
+
+    return new ListBuilder(reservations, count).build();
+  }
+
+  async getHistoryByDriver(driverId: string) {
+    const [reservations, count] =
+      await this.reservationRepo.getHistoryByDriver(driverId);
+
+    return new ListBuilder(reservations, count).build();
+  }
 }

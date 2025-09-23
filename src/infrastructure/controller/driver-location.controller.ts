@@ -17,6 +17,7 @@ import {
 import { instanceToPlain } from 'class-transformer';
 
 import { DriverLocationCreateRequestDto } from '../../application/dto/driver-location/driver-location-create-request.dto';
+import { DriverLocationResponseDto } from '../../application/dto/driver-location/driver-location-response.dto';
 import { DriverLocationAppService } from '../../application/service/driver-location.app.service';
 
 @ApiTags('driver-location')
@@ -26,7 +27,10 @@ export class DriverLocationController {
   constructor(private readonly service: DriverLocationAppService) {}
 
   @ApiOperation({ summary: 'Record driver location sample' })
-  @ApiResponse({ status: HttpStatus.CREATED })
+  @ApiResponse({
+    type: DriverLocationResponseDto,
+    status: HttpStatus.CREATED,
+  })
   @Post('driver/:driverId')
   async record(
     @Param('driverId', new ParseUUIDPipe()) driverId: string,
@@ -41,7 +45,7 @@ export class DriverLocationController {
   }
 
   @ApiOperation({ summary: 'Get latest driver location' })
-  @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponse({ type: DriverLocationResponseDto, status: HttpStatus.OK })
   @Get('driver/:driverId/latest')
   async latest(@Param('driverId', new ParseUUIDPipe()) driverId: string) {
     const loc = await this.service.latest(driverId);

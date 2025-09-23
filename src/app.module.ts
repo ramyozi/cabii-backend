@@ -7,6 +7,7 @@ import { AccessibilityFeatureAppService } from './application/service/accessibil
 import { AuthSessionService } from './application/service/auth-session.service';
 import { AuthService } from './application/service/auth.service';
 import { CustomerProfileAppService } from './application/service/customer-profile.app.service';
+import { DriverCommissionAppService } from './application/service/driver-commission.app.service';
 import { DriverDocumentAppService } from './application/service/driver-document.app.service';
 import { DriverProfileAppService } from './application/service/driver-profile.app.service';
 import { UserAccessibilityAppService } from './application/service/user-accessibility.app.service';
@@ -20,6 +21,7 @@ import { eventEmitterConfig } from './infrastructure/common/event-emitter.config
 import { AccessibilityFeatureController } from './infrastructure/controller/accessibility-feature.controller';
 import { AuthController } from './infrastructure/controller/auth.controller';
 import { CustomerProfileController } from './infrastructure/controller/customer-profile.controller';
+import { DriverCommissionController } from './infrastructure/controller/driver-commission.controller';
 import { DriverDocumentController } from './infrastructure/controller/driver-document.controller';
 import { DriverProfileController } from './infrastructure/controller/driver-profile.controller';
 import { UserAccessibilityController } from './infrastructure/controller/user-accessibility.controller';
@@ -30,6 +32,7 @@ import { VehicleController } from './infrastructure/controller/vehicle.controlle
 import { AccessibilityFeatureRepository } from './infrastructure/repository/accessibility-feature.repository';
 import { AuthSessionRepository } from './infrastructure/repository/auth-session.repository';
 import { CustomerProfileRepository } from './infrastructure/repository/customer-profile.repository';
+import { DriverCommissionRepository } from './infrastructure/repository/driver-commission.repository';
 import { DriverDocumentRepository } from './infrastructure/repository/driver-document.repository';
 import { DriverProfileRepository } from './infrastructure/repository/driver-profile.repository';
 import { UserAccessibilityRepository } from './infrastructure/repository/user-accessibility.repository';
@@ -56,6 +59,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     AccessibilityFeatureController,
     UserAccessibilityController,
     VehicleAccessibilityController,
+    DriverCommissionController,
   ],
 
   providers: [
@@ -75,6 +79,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     AccessibilityFeatureRepository,
     UserAccessibilityRepository,
     VehicleAccessibilityRepository,
+    DriverCommissionRepository,
 
     /* App Service Providers */
     UserAppService,
@@ -86,6 +91,7 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     AccessibilityFeatureAppService,
     UserAccessibilityAppService,
     VehicleAccessibilityAppService,
+    DriverCommissionAppService,
   ],
 })
 export class AppModule {}

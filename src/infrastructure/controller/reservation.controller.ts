@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -32,10 +33,15 @@ import { ReservationUpdateRequestDto } from '../../application/dto/reservation/r
 import { ReservationExecutionAppService } from '../../application/service/reservation-execution.app.service';
 import { ReservationAppService } from '../../application/service/reservation.app.service';
 import { Reservation } from '../../domain/entity/reservation.entity';
+import { ActiveRoleEnum } from '../../domain/enums/active-role.enum';
+import { JwtAuthGuard } from '../decorator/auth/jwt-auth.guard';
+import { Roles } from '../decorator/auth/roles.decorator';
+import { RolesGuard } from '../decorator/auth/roles.guard';
 
 @ApiTags('reservation')
 @Controller('reservation')
 @ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ReservationController {
   constructor(
     private readonly reservationAppService: ReservationAppService,
@@ -71,6 +77,7 @@ export class ReservationController {
 
   @ApiOperation({ summary: 'Cancel reservation' })
   @ApiResponse({ type: Reservation, status: HttpStatus.OK })
+  @Roles([ActiveRoleEnum.Customer])
   @Patch(':id/cancel')
   async cancel(@Param('id', new ParseUUIDPipe()) id: string) {
     const reservation = await this.reservationAppService.cancel(id);
@@ -234,6 +241,7 @@ export class ReservationController {
 
   @ApiOperation({ summary: 'Driver arrived at pickup point' })
   @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Roles([ActiveRoleEnum.Driver])
   @Patch(':id/arrived')
   async driverArrived(@Param('id', new ParseUUIDPipe()) id: string) {
     const reservation = await this.reservationExecService.driverArrived(id);
@@ -265,6 +273,7 @@ export class ReservationController {
 
   @ApiOperation({ summary: 'Start trip' })
   @ApiResponse({ type: ReservationResponseDto, status: HttpStatus.OK })
+  @Roles([ActiveRoleEnum.Driver])
   @Patch(':id/start')
   async startTrip(@Param('id', new ParseUUIDPipe()) id: string) {
     const reservation = await this.reservationExecService.startTrip(id);

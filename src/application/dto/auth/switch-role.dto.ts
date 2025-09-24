@@ -1,18 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum } from 'class-validator';
 
 import { ActiveRoleEnum } from '../../../domain/enums/active-role.enum';
 
-export class SignInRequestDto {
-  @IsNotEmpty()
-  @ApiProperty()
-  @IsEmail()
-  email: string;
-
-  @IsNotEmpty()
-  @ApiProperty()
-  password: string;
-
+export class SwitchRoleDto {
   @ApiProperty({ enum: ActiveRoleEnum })
   @IsEnum(ActiveRoleEnum)
   activeRole: ActiveRoleEnum;

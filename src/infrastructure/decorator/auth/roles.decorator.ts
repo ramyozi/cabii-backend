@@ -1,11 +1,11 @@
-import { Reflector } from '@nestjs/core';
+import { SetMetadata } from '@nestjs/common';
 
-import { RoleEnum } from '../../../domain/enums/role.enum';
+import { ROLES_METADATA_KEY } from './roles.guard';
+import { ActiveRoleEnum } from '../../../domain/enums/active-role.enum';
 
 /**
- * Decorator to set roles for a controller or a route handler.
- * By default all routes need to be authenticated, without any role.
- * If you want to allow public access to a route, you can use the 'public' keyword.
- * @Param roles: string[] | 'public'
+ * Decorator to set acting roles for a route.
+ * Use 'public' to allow unauthenticated access.
  */
-export const Roles = Reflector.createDecorator<RoleEnum[] | 'public'>();
+export const Roles = (roles: ActiveRoleEnum[] | 'public') =>
+  SetMetadata(ROLES_METADATA_KEY, roles);

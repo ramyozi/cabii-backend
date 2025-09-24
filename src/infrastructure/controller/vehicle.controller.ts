@@ -24,8 +24,6 @@ import { VehicleListResponseDto } from '../../application/dto/vehicle/vehicle-li
 import { VehicleResponseDto } from '../../application/dto/vehicle/vehicle-response.dto';
 import { VehicleAccessibilityAppService } from '../../application/service/vehicle-accessibility.app.service';
 import { VehicleAppService } from '../../application/service/vehicle.app.service';
-import { RoleEnum } from '../../domain/enums/role.enum';
-import { Roles } from '../decorator/auth/roles.decorator';
 
 @ApiTags('vehicle')
 @Controller('vehicle')
@@ -42,7 +40,6 @@ export class VehicleController {
     type: VehicleListResponseDto,
     status: HttpStatus.OK,
   })
-  @Roles([RoleEnum.Admin])
   @Get()
   async getAllVehicle(@Req() req: Express.Request) {
     const vehicles = await this.vehicleAppService.getList();

@@ -20,15 +20,20 @@ export class UserRepository extends Repository<User> {
   }
 
   async getAll(): Promise<[User[], number]> {
-    const query = this.createQueryBuilder('user');
+    const query = this.createQueryBuilder('user')
+      .leftJoinAndSelect('user.driverProfile', 'driverProfile')
+      .leftJoinAndSelect('user.customerProfile', 'customerProfile');
 
     return await query.getManyAndCount();
   }
 
   async getOneById(userId: string) {
-    const query = this.createQueryBuilder('user').where('user.id = :userId', {
-      userId,
-    });
+    const query = this.createQueryBuilder('user')
+      .leftJoinAndSelect('user.driverProfile', 'driverProfile')
+      .leftJoinAndSelect('user.customerProfile', 'customerProfile')
+      .where('user.id = :userId', {
+        userId,
+      });
     const user = await query.getOne();
 
     if (!user) {
@@ -39,9 +44,12 @@ export class UserRepository extends Repository<User> {
   }
 
   async getOneByEmail(email: string) {
-    const query = this.createQueryBuilder('user').where('user.email = :email', {
-      email,
-    });
+    const query = this.createQueryBuilder('user')
+      .leftJoinAndSelect('user.driverProfile', 'driverProfile')
+      .leftJoinAndSelect('user.customerProfile', 'customerProfile')
+      .where('user.email = :email', {
+        email,
+      });
 
     const user = await query.getOne();
 

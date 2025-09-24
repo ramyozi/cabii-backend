@@ -5,6 +5,8 @@ import * as jwt from 'jsonwebtoken';
 
 import { AuthSessionService } from './auth-session.service';
 import { User } from '../../domain/entity/user.entity';
+import { ActiveRoleEnum } from '../../domain/enums/active-role.enum';
+import { RoleEnum } from '../../domain/enums/role.enum';
 import { Hash } from '../../infrastructure/common/hash.utils';
 import { Time } from '../../infrastructure/common/time.utils';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
@@ -42,6 +44,8 @@ export class AuthService {
       throw new Error('Wrong password');
     }
 
+    const activeRole = await this.resolveActiveRole(user, signInDto.activeRole);
+
     const authSession = await this.authSessionService.createAuthSession(
       user,
       Time.fromDays(15).minutes,
@@ -49,10 +53,99 @@ export class AuthService {
 
     const authTokenDto = new AuthTokenDto();
 
-    authTokenDto.accessToken = await this.generateJwtToken(user);
+    authTokenDto.accessToken = await this.generateJwtToken(user, activeRole);
     authTokenDto.refreshToken = authSession.refreshToken;
 
     return authTokenDto;
+  }
+
+  public async switchRole(
+    userId: string,
+    nextRole: ActiveRoleEnum,
+  ): Promise<AuthTokenDto> {
+    const user = await this.userRepository.getOneById(userId);
+
+    // Ensure user actually has the requested profile
+    await this.ensureUserHasProfileForRole(user, nextRole);
+
+    // Safety: block if user has active reservations under current role
+    const hasActive = await this.hasActiveWorkInAnyRole(userId);
+
+    if (hasActive)
+      throw new Error('Cannot switch role while you have active reservations');
+
+    const tokens = new AuthTokenDto();
+
+    tokens.accessToken = await this.generateJwtToken(user, nextRole);
+
+    // keep refresh token as-is (session unchanged)
+    const lastSession = await this.authSessionService.createAuthSession(
+      user,
+      Time.fromDays(15).minutes,
+    );
+
+    tokens.refreshToken = lastSession.refreshToken;
+    return tokens;
+  }
+
+  private async resolveActiveRole(
+    user: User,
+    preferred?: ActiveRoleEnum,
+  ): Promise<ActiveRoleEnum> {
+    if (preferred) {
+      await this.ensureUserHasProfileForRole(user, preferred);
+      return preferred;
+    }
+
+    // default: Admin => ADMIN; else prefer CUSTOMER if exists else DRIVER
+    if (user.role === RoleEnum.Admin) return ActiveRoleEnum.Admin;
+
+    if (user.customerProfile) return ActiveRoleEnum.Customer;
+
+    if (user.driverProfile) return ActiveRoleEnum.Driver;
+
+    // fallback
+    return ActiveRoleEnum.Customer;
+  }
+
+  private async ensureUserHasProfileForRole(user: User, role: ActiveRoleEnum) {
+    console.log('role', role, 'user', user);
+    if (role === ActiveRoleEnum.Admin && user.role !== RoleEnum.Admin) {
+      throw new Error('Not an admin');
+    }
+
+    if (role === ActiveRoleEnum.Driver && !user.driverProfile) {
+      throw new Error('Driver profile required');
+    }
+
+    if (role === ActiveRoleEnum.Customer && !user.customerProfile) {
+      throw new Error('Customer profile required');
+    }
+  }
+
+  private async hasActiveWorkInAnyRole(userId: string): Promise<boolean> {
+    // TODO
+
+    /* un truc du style
+
+    const driverId = (await this.userRepository.getOneById(userId))
+      .driverProfile?.id;
+    const customerId = (await this.userRepository.getOneById(userId))
+      .customerProfile?.id;
+
+    const hasDriverActive = driverId
+      ? await this.reservationRepo.existsActiveByDriverId(driverId)
+      : false;
+
+    const hasCustomerActive = customerId
+      ? await this.reservationRepo.existsActiveByCustomerId(customerId)
+      : false;
+
+          return hasDriverActive || hasCustomerActive;
+
+     */
+
+    return false;
   }
 
   async refresh(refreshToken: string): Promise<AuthTokenDto> {
@@ -66,9 +159,19 @@ export class AuthService {
       Time.fromDays(15).minutes,
     );
 
+    const oldClaims = await this.decodeToken(
+      `Bearer ${jwt.sign(
+        { claims: { userId: user.id, userEmail: user.email } },
+        this.jwtSecret,
+      )}`,
+    ).catch(() => null);
+
+    const activeRole =
+      oldClaims?.activeRole ?? (await this.resolveActiveRole(user)); // fallback if not in token
+
     const authTokenDto = new AuthTokenDto();
 
-    authTokenDto.accessToken = await this.generateJwtToken(user);
+    authTokenDto.accessToken = await this.generateJwtToken(user, activeRole);
     authTokenDto.refreshToken = newAuthSession.refreshToken;
 
     return authTokenDto;
@@ -81,8 +184,11 @@ export class AuthService {
     await this.authSessionService.revokeAuthSession(authSession);
   }
 
-  public async generateJwtToken(user: User): Promise<string> {
-    const claims = await this.generateJwtClaims(user);
+  public async generateJwtToken(
+    user: User,
+    activeRole: ActiveRoleEnum,
+  ): Promise<string> {
+    const claims = await this.generateJwtClaims(user, activeRole);
 
     return jwt.sign({ claims }, this.jwtSecret, {
       expiresIn: this.jwtExpiresIn,
@@ -96,11 +202,15 @@ export class AuthService {
     return Hash.from(saltedPassword).sha512();
   }
 
-  public async generateJwtClaims(user: User): Promise<JwtClaimsDto> {
+  public async generateJwtClaims(
+    user: User,
+    activeRole: ActiveRoleEnum,
+  ): Promise<JwtClaimsDto> {
     const claims = new JwtClaimsDto();
 
     claims.userEmail = user.email;
     claims.userId = user.id;
+    claims.activeRole = activeRole;
 
     await validateOrReject(claims);
     return claims;

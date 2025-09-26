@@ -26,9 +26,7 @@ import { UserListResponseDto } from '../../application/dto/user/user-list-respon
 import { UserResponseDto } from '../../application/dto/user/user-response.dto';
 import { UserAccessibilityAppService } from '../../application/service/user-accessibility.app.service';
 import { UserAppService } from '../../application/service/user.app.service';
-import { RoleEnum } from '../../domain/enums/role.enum';
 import { CurrentUserId } from '../decorator/auth/jwt-claim.decorator';
-import { Roles } from '../decorator/auth/roles.decorator';
 
 @ApiTags('user')
 @Controller('user')
@@ -45,7 +43,6 @@ export class UserController {
     type: UserListResponseDto,
     status: HttpStatus.OK,
   })
-  @Roles([RoleEnum.Admin])
   @Get()
   async getAllUsers(@Req() req: Express.Request) {
     const users = await this.userAppService.getList();

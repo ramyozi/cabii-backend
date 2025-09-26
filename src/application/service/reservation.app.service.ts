@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import haversine from 'haversine-distance';
 
 import { AccessibilityMatchingAppService } from './accessibility-matching.app.service';
+import { DriverCommissionAppService } from './driver-commission.app.service';
 import { Reservation } from '../../domain/entity/reservation.entity';
 import { ReservationStatusEnum } from '../../domain/enums/reservation-status.enum';
 import { ReservationAccessibilityMismatchException } from '../../domain/exception/accessibility/reservation-accessibility-mismatch.exception';
@@ -32,6 +33,7 @@ export class ReservationAppService {
     private readonly vehicleAccessibilityRepository: VehicleAccessibilityRepository,
     private readonly reservationService: ReservationService,
     private readonly accessibilityMatchingService: AccessibilityMatchingAppService,
+    private readonly driverCommissionAppService: DriverCommissionAppService,
   ) {}
 
   async create(dto: ReservationCreateRequestDto): Promise<Reservation> {
@@ -62,6 +64,9 @@ export class ReservationAppService {
     reservation.dropoffLat = dto.dropoffLat;
     reservation.dropoffLng = dto.dropoffLng;
     reservation.scheduledAt = dto.scheduledAt;
+
+    await this.reservationService.applyRoute(reservation);
+    this.reservationService.applyFare(reservation);
 
     return await this.reservationRepo.save(reservation);
   }
@@ -101,6 +106,21 @@ export class ReservationAppService {
     }
 
     reservation.scheduledAt = dto.scheduledAt ?? reservation.scheduledAt;
+
+    if (
+      dto.pickupLat !== undefined &&
+      dto.pickupLng !== undefined &&
+      dto.dropoffLat !== undefined &&
+      dto.dropoffLng !== undefined
+    ) {
+      reservation.pickupLat = dto.pickupLat;
+      reservation.pickupLng = dto.pickupLng;
+      reservation.dropoffLat = dto.dropoffLat;
+      reservation.dropoffLng = dto.dropoffLng;
+
+      await this.reservationService.applyRoute(reservation);
+      this.reservationService.applyFare(reservation);
+    }
 
     return await this.reservationRepo.save(reservation);
   }
@@ -170,6 +190,15 @@ export class ReservationAppService {
     reservation.vehicle = vehicle;
     reservation.status = ReservationStatusEnum.Accepted;
 
+    await this.reservationService.applyRoute(reservation);
+
+    const commission =
+      await this.driverCommissionAppService.getActiveCommission(driver.id);
+
+    this.reservationService.applyFare(reservation, commission);
+
+    reservation.finalFare = reservation.estimatedFare;
+
     return await this.reservationRepo.save(reservation);
   }
 
@@ -179,6 +208,10 @@ export class ReservationAppService {
     reservation.driver = undefined;
     reservation.vehicle = undefined;
     reservation.status = ReservationStatusEnum.Pending;
+
+    reservation.companyFee = undefined;
+    reservation.driverEarnings = undefined;
+    reservation.finalFare = undefined;
 
     return await this.reservationRepo.save(reservation);
   }
@@ -212,6 +245,19 @@ export class ReservationAppService {
     );
 
     reservation.status = ReservationStatusEnum.Completed;
+
+    await this.reservationService.applyRoute(reservation);
+    this.reservationService.applyActuals(reservation);
+
+    if (reservation.driver) {
+      const commission =
+        await this.driverCommissionAppService.getActiveCommission(
+          reservation.driver.id,
+        );
+
+      this.reservationService.applyFare(reservation, commission, true);
+    }
+
     return await this.reservationRepo.save(reservation);
   }
 
@@ -312,6 +358,11 @@ export class ReservationAppService {
         { lat: driver.currentLat, lon: driver.currentLng },
         { lat: reservation.pickupLat, lon: reservation.pickupLng },
       );
+
+      const commission =
+        await this.driverCommissionAppService.getActiveCommission(driver.id);
+
+      this.reservationService.applyFare(reservation, commission);
 
       results.push({ reservation, distance });
     }

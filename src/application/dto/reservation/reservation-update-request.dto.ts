@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsUUID, IsDate } from 'class-validator';
+import { IsEnum, IsOptional, IsUUID, IsDate, IsNumber } from 'class-validator';
 
 import { ReservationStatusEnum } from '../../../domain/enums/reservation-status.enum';
 
@@ -20,4 +20,24 @@ export class ReservationUpdateRequestDto {
   @Type(() => Date)
   @IsDate()
   scheduledAt?: Date;
+
+  @ApiProperty({ required: false })
+  @IsNumber()
+  @IsOptional()
+  pickupLat?: number;
+
+  @ApiProperty({ required: false })
+  @IsNumber()
+  @IsOptional()
+  pickupLng?: number;
+
+  @ApiProperty({ required: false })
+  @IsNumber()
+  @IsOptional()
+  dropoffLat?: number;
+
+  @ApiProperty({ required: false })
+  @IsNumber()
+  @IsOptional()
+  dropoffLng?: number;
 }

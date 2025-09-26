@@ -94,4 +94,36 @@ export class Reservation {
 
   @OneToMany(() => ReservationEvent, (e) => e.reservation)
   events: ReservationEvent[];
+
+  @ApiProperty({ required: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  estimatedFare?: number;
+
+  @ApiProperty({ required: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  finalFare?: number;
+
+  @ApiProperty({ required: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  companyFee?: number;
+
+  @ApiProperty({ required: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  driverEarnings?: number;
+
+  @ApiProperty({ required: false })
+  @Column({ type: 'numeric', nullable: true })
+  estimatedDistanceMeters?: number;
+
+  @ApiProperty({ required: false })
+  @Column({ type: 'numeric', nullable: true })
+  actualDistanceMeters?: number;
+
+  @ApiProperty({ required: false })
+  @Column({ type: 'integer', nullable: true })
+  estimatedDurationSeconds?: number;
+
+  @ApiProperty({ required: false })
+  @Column({ type: 'integer', nullable: true })
+  actualDurationSeconds?: number;
 }

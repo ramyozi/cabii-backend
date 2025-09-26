@@ -26,12 +26,16 @@ export class CustomerProfileRepository extends Repository<CustomerProfile> {
   }
 
   async getOneById(customerProfileId: string) {
-    const query = this.createQueryBuilder('customerProfile').where(
-      'customerProfile.id = :customerProfileId',
-      {
+    const query = this.createQueryBuilder('customerProfile')
+      .leftJoinAndSelect('customerProfile.user', 'user')
+      .leftJoinAndSelect(
+        'user.accessibilityPreferences',
+        'accessibilityPreferences',
+      )
+      .leftJoinAndSelect('accessibilityPreferences.feature', 'feature')
+      .where('customerProfile.id = :customerProfileId', {
         customerProfileId,
-      },
-    );
+      });
     const customerProfile = await query.getOne();
 
     if (!customerProfile) {

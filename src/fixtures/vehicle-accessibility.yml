@@ -5,5 +5,13 @@ items:
     feature: '@feature1'
 
   vehiclePref2:
+    vehicle: '@vehicle1'
+    feature: '@feature2'
+
+  vehiclePref3:
+    vehicle: '@vehicle2'
+    feature: '@feature1'
+
+  vehiclePref4:
     vehicle: '@vehicle2'
     feature: '@feature2'

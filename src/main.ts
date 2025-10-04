@@ -17,8 +17,24 @@ async function bootstrap() {
     logger: ['error', 'warn', 'debug', 'verbose'], // enable verbose logs
   });
 
+  const allowedOrigins = process.env.CORS_ORIGINS?.split(',').map((o) =>
+    o.trim(),
+  ) ?? [
+    'http://localhost:8081',
+    'http://192.168.1.32:8081',
+    'http://localhost:3000',
+  ];
+
   app.enableCors({
-    origin: process.env.CORS_ORIGINS?.split(',') || '*',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      console.warn(`❌ CORS blocked request from origin: ${origin}`);
+      return callback(new Error(`Not allowed by CORS: ${origin}`));
+    },
     credentials: true,
   });
   app.use(cookieParser());

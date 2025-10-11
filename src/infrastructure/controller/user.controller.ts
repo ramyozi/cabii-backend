@@ -27,6 +27,7 @@ import { UserResponseDto } from '../../application/dto/user/user-response.dto';
 import { UserAccessibilityAppService } from '../../application/service/user-accessibility.app.service';
 import { UserAppService } from '../../application/service/user.app.service';
 import { CurrentUserId } from '../decorator/auth/jwt-claim.decorator';
+import { Roles } from '../decorator/auth/roles.decorator';
 
 @ApiTags('user')
 @Controller('user')
@@ -36,6 +37,28 @@ export class UserController {
     private readonly userAccessibilityAppService: UserAccessibilityAppService,
     private readonly userAppService: UserAppService,
   ) {}
+
+  @ApiOperation({ summary: 'Get current User.' })
+  @ApiResponse({
+    type: UserResponseDto,
+    status: HttpStatus.OK,
+    description: 'Current User.',
+  })
+  @Get('me')
+  async getMe(
+    @Req() req: Request,
+    @CurrentUserId(new ParseUUIDPipe()) userId: string,
+  ) {
+    const user = await this.userAppService.getOneById(userId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: instanceToPlain(user, {
+        strategy: 'exposeAll',
+        groups: ['default'],
+      }),
+    };
+  }
 
   @ApiOperation({ summary: 'Get all users.' })
   @ApiBearerAuth('JWT-auth')
@@ -103,6 +126,7 @@ export class UserController {
     type: UserResponseDto,
     status: HttpStatus.CREATED,
   })
+  @Roles('public')
   @Post()
   async createUser(
     @Req() req: Request,
@@ -113,28 +137,6 @@ export class UserController {
     return {
       statusCode: HttpStatus.CREATED,
       data: instanceToPlain(createdUser, {
-        strategy: 'exposeAll',
-        groups: ['default'],
-      }),
-    };
-  }
-
-  @ApiOperation({ summary: 'Get current User.' })
-  @ApiResponse({
-    type: UserResponseDto,
-    status: HttpStatus.OK,
-    description: 'Current User.',
-  })
-  @Get('me')
-  async getMe(
-    @Req() req: Request,
-    @CurrentUserId(new ParseUUIDPipe()) userId: string,
-  ) {
-    const user = await this.userAppService.getOneById(userId);
-
-    return {
-      statusCode: HttpStatus.OK,
-      data: instanceToPlain(user, {
         strategy: 'exposeAll',
         groups: ['default'],
       }),

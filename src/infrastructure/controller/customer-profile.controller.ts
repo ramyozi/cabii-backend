@@ -22,6 +22,8 @@ import { CustomerProfileCreateRequestDto } from '../../application/dto/customer/
 import { CustomerProfileListResponseDto } from '../../application/dto/customer/customer-profile-list-response.dto';
 import { CustomerProfileResponseDto } from '../../application/dto/customer/customer-profile-response.dto';
 import { CustomerProfileAppService } from '../../application/service/customer-profile.app.service';
+import { ActiveRoleEnum } from '../../domain/enums/active-role.enum';
+import { Roles } from '../decorator/auth/roles.decorator';
 
 @ApiTags('customer-profile')
 @Controller('customer-profile')
@@ -73,6 +75,7 @@ export class CustomerProfileController {
     };
   }
 
+  @Roles([ActiveRoleEnum.Onboarding])
   @ApiOperation({ summary: 'Create an customerProfile.' })
   @ApiResponse({
     type: CustomerProfileResponseDto,

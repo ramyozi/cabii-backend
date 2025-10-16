@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { User } from '../../domain/entity/user.entity';
+import { ActiveRoleEnum } from '../../domain/enums/active-role.enum';
 import { RoleEnum } from '../../domain/enums/role.enum';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
 import { ListBuilder, ListInterface } from '../common/list';
@@ -36,11 +37,12 @@ export class UserAppService {
     user.role = dto.role || RoleEnum.User;
     user.firstname = dto.firstname;
     user.lastname = dto.lastname;
+    user.activeRole = ActiveRoleEnum.Onboarding;
 
-    this.isEmailAvailable(dto.email);
+    await this.isEmailAvailable(dto.email);
     user.email = dto.email;
 
-    this.isPhoneNumberAvailable(dto.phone);
+    await this.isPhoneNumberAvailable(dto.phone);
 
     user.phone = dto.phone;
     user.password = this.authService.hashPassword(dto.password);

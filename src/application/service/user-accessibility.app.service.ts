@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 
 import { AccessibilityFeature } from '../../domain/entity/accessibility-feature.entity';
 import { UserAccessibility } from '../../domain/entity/user-accessibility.entity';
+import { UserAccessibilityAlreadyExistsException } from '../../domain/exception/accessibility/user-accessibility-already-exists.exception';
 import { UserAccessibilityNotFoundException } from '../../domain/exception/accessibility/user-accessibility-not-found.exception';
 import { AccessibilityFeatureRepository } from '../../infrastructure/repository/accessibility-feature.repository';
 import { UserAccessibilityRepository } from '../../infrastructure/repository/user-accessibility.repository';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
 import { ListBuilder, ListInterface } from '../common/list';
-import { UserAccessibilityAlreadyExistsException } from '../dto/accessibility/user/user-accessibility-already-exists.exception';
 
 @Injectable()
 export class UserAccessibilityAppService {

@@ -20,7 +20,9 @@ import Express from 'express';
 
 import { AccessibilityFeatureListResponseDto } from '../../application/dto/accessibility/accessibility-feature-list-response.dto';
 import { EmailAvailibilityCheckRequestDto } from '../../application/dto/user/email-availibility-check-request.dto';
+import { EmailAvailabilityCheckResponseDto } from '../../application/dto/user/email-availibility-check-response.dto';
 import { PhoneAvailibilityCheckRequestDto } from '../../application/dto/user/phone-availibility-check-request.dto';
+import { PhoneAvailabilityCheckResponseDto } from '../../application/dto/user/phone-availibility-check-response.dto';
 import { UserCreateRequestDto } from '../../application/dto/user/user-create-request.dto';
 import { UserListResponseDto } from '../../application/dto/user/user-list-response.dto';
 import { UserResponseDto } from '../../application/dto/user/user-response.dto';
@@ -147,12 +149,13 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Email availability.',
+    type: EmailAvailabilityCheckResponseDto,
   })
   @Get('check-email')
   async checkEmailAvailability(
     @Req() req: Request,
     @Body(new ValidationPipe()) dto: EmailAvailibilityCheckRequestDto,
-  ) {
+  ): Promise<EmailAvailabilityCheckResponseDto> {
     const isAvailable = await this.userAppService.isEmailAvailable(dto.email);
 
     return {
@@ -165,6 +168,7 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Phone number availability.',
+    type: PhoneAvailabilityCheckResponseDto,
   })
   @ApiOperation({ summary: 'Check phone number availability.' })
   @Get('check-phone')
@@ -172,7 +176,7 @@ export class UserController {
     @Req() req: Request,
     @Body(new ValidationPipe())
     dto: PhoneAvailibilityCheckRequestDto,
-  ) {
+  ): Promise<PhoneAvailabilityCheckResponseDto> {
     const isAvailable = await this.userAppService.isPhoneNumberAvailable(
       dto.phone,
     );

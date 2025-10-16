@@ -13,6 +13,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { instanceToPlain } from 'class-transformer';
 import express from 'express';
 
+import { AuthTokenResponseDto } from '../../application/dto/auth/auth-token-response.dto';
 import { RefreshAuthRequestDto } from '../../application/dto/auth/refresh-auth-request.dto';
 import { SignInRequestDto } from '../../application/dto/auth/sign-in-request.dto';
 import { SwitchRoleDto } from '../../application/dto/auth/switch-role.dto';
@@ -74,6 +75,11 @@ export class AuthController {
     }
   }
 
+  @ApiOperation({ summary: 'Refresh authentication tokens' })
+  @ApiResponse({
+    type: AuthTokenResponseDto,
+    status: HttpStatus.OK,
+  })
   @Post('refresh')
   @Roles('public')
   @HttpCode(HttpStatus.OK)
@@ -99,8 +105,9 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Sign out user' })
   @ApiResponse({
-    type: BaseResponseDto,
+    type: AuthTokenResponseDto,
     status: HttpStatus.OK,
+    description: 'Authentication tokens.',
   })
   @Post('sign-out')
   @UseGuards(JwtAuthGuard)

@@ -17,6 +17,7 @@ import { CustomerProfile } from './customer-profile.entity';
 import { DriverProfile } from './driver-profile.entity';
 import { UserAccessibility } from './user-accessibility.entity';
 import { Hash } from '../../infrastructure/common/hash.utils';
+import { ActiveRoleEnum } from '../enums/active-role.enum';
 import { RoleEnum } from '../enums/role.enum';
 
 @Entity()
@@ -66,6 +67,10 @@ export class User {
   @ApiProperty({ enum: RoleEnum })
   @Column('enum', { enum: RoleEnum, default: RoleEnum.User })
   role: RoleEnum;
+
+  @ApiProperty({ enum: ActiveRoleEnum })
+  @Column('enum', { enum: ActiveRoleEnum, default: ActiveRoleEnum.Onboarding })
+  activeRole: ActiveRoleEnum;
 
   // === Profiles ===
   @OneToOne(() => DriverProfile, (driver) => driver.user, {

@@ -34,6 +34,8 @@ import { RolesGuard } from '../decorator/auth/roles.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Sign in user and issue tokens' })
+  @ApiResponse({ type: AuthTokenResponseDto, status: HttpStatus.OK })
   @HttpCode(HttpStatus.OK)
   @Roles('public')
   @Post('sign-in')

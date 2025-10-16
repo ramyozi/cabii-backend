@@ -7,6 +7,9 @@ import { AuthSessionService } from './auth-session.service';
 import { User } from '../../domain/entity/user.entity';
 import { ActiveRoleEnum } from '../../domain/enums/active-role.enum';
 import { RoleEnum } from '../../domain/enums/role.enum';
+import { UserDoesNotHaveCustomerProfileException } from '../../domain/exception/user/user-does-not-have-customer-profile.exception';
+import { UserDoesNotHaveDriverProfileException } from '../../domain/exception/user/user-does-not-have-driver-profile.exception';
+import { UserDoesNotHaveAnyProfileException } from '../../domain/exception/user/user-is-not-admin.exception';
 import { Hash } from '../../infrastructure/common/hash.utils';
 import { Time } from '../../infrastructure/common/time.utils';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
@@ -118,15 +121,28 @@ export class AuthService {
 
   private async ensureUserHasProfileForRole(user: User, role: ActiveRoleEnum) {
     if (role === ActiveRoleEnum.Admin && user.role !== RoleEnum.Admin)
-      throw new Error('Not an admin');
+      throw new UserDoesNotHaveAnyProfileException('Not an admin');
 
     if (role === ActiveRoleEnum.Onboarding) return;
 
     if (role === ActiveRoleEnum.Driver && !user.driverProfile)
-      throw new Error('Driver profile required');
+      throw new UserDoesNotHaveDriverProfileException(
+        'User does not have a driver profile',
+      );
 
     if (role === ActiveRoleEnum.Customer && !user.customerProfile)
-      throw new Error('Customer profile required');
+      throw new UserDoesNotHaveCustomerProfileException(
+        'User does not have a customer profile',
+      );
+
+    if (
+      !user.driverProfile &&
+      !user.customerProfile &&
+      user.role !== RoleEnum.Admin
+    )
+      throw new UserDoesNotHaveAnyProfileException(
+        'User does not have any profile (driver or customer)',
+      );
   }
 
   private async hasActiveWorkInAnyRole(userId: string): Promise<boolean> {

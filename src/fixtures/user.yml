@@ -6,6 +6,7 @@ items:
     email: 'alibaba@example.com'
     phone: '+123456789'
     role: 'USER'
+    activeRole: 'CUSTOMER'
     __call:
       setPassword:
         - 'foo'
@@ -16,6 +17,7 @@ items:
     email: 'khalidshahzad@example.com'
     phone: '+123466789'
     role: 'USER'
+    activeRole: 'DRIVER'
     __call:
       setPassword:
         - 'foo'
@@ -26,6 +28,7 @@ items:
     email: 'layla.mansour@example.com'
     phone: '+123457789'
     role: 'USER'
+    activeRole: 'DRIVER'
     __call:
       setPassword:
         - 'foo'
@@ -36,6 +39,7 @@ items:
     email: 'admin@cabii.com'
     phone: '+111111111'
     role: 'ADMIN'
+    activeRole: 'ADMIN'
     isActive: true
     __call:
       setPassword:

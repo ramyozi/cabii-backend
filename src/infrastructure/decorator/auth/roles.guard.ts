@@ -6,31 +6,42 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { RoleEnum } from '../../../domain/enums/role.enum';
+import { ActiveRoleEnum } from '../../../domain/enums/active-role.enum';
 
 export const ROLES_METADATA_KEY = 'roles';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {}
 
-  canActivate(ctx: ExecutionContext): boolean {
-    const roles = this.reflector.get<RoleEnum[] | 'public'>(
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles = this.reflector.get<ActiveRoleEnum[] | 'public'>(
       ROLES_METADATA_KEY,
-      ctx.getHandler(),
+      context.getHandler(),
     );
 
-    if (roles === 'public') return true; // no auth required
+    if (requiredRoles === 'public') return true;
 
-    const request = ctx.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    if (!user) throw new ForbiddenException('No user claims found');
+    if (!user) {
+      throw new ForbiddenException('No authenticated user found in request.');
+    }
 
-    if (!roles || roles.length === 0) return true; // only JWT required
+    const activeRole: ActiveRoleEnum | undefined =
+      user.activeRole ?? user.claims?.activeRole;
 
-    if (!roles.includes(user.activeRole)) {
-      throw new ForbiddenException(`Requires active role: ${roles.join(', ')}`);
+    if (!activeRole) {
+      throw new ForbiddenException('No activeRole found in JWT claims.');
+    }
+
+    if (!requiredRoles || requiredRoles.length === 0) return true;
+
+    if (!requiredRoles.includes(activeRole)) {
+      throw new ForbiddenException(
+        `Requires active role: ${requiredRoles.join(', ')}`,
+      );
     }
 
     return true;

@@ -50,7 +50,7 @@ export class JwtAuthGuard implements CanActivate {
       req.user = {
         id: claims.userId,
         email: claims.userEmail,
-        role: claims.activeRole,
+        activeRole: claims.activeRole,
       };
 
       return true;

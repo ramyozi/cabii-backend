@@ -24,6 +24,8 @@ import { DriverProfileListResponseDto } from '../../application/dto/driver/drive
 import { DriverProfileResponseDto } from '../../application/dto/driver/driver-profile-response.dto';
 import { SetActiveVehicleRequestDto } from '../../application/dto/driver/driver-profile-set-active-vehicle-request.dto';
 import { DriverProfileAppService } from '../../application/service/driver-profile.app.service';
+import { ActiveRoleEnum } from '../../domain/enums/active-role.enum';
+import { Roles } from '../decorator/auth/roles.decorator';
 
 @ApiTags('driver-profile')
 @Controller('driver-profile')
@@ -75,6 +77,7 @@ export class DriverProfileController {
     };
   }
 
+  @Roles([ActiveRoleEnum.Onboarding])
   @ApiOperation({ summary: 'Create an driverProfile.' })
   @ApiResponse({
     type: DriverProfileResponseDto,

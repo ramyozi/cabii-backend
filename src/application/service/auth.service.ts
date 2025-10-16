@@ -92,35 +92,41 @@ export class AuthService {
     user: User,
     preferred?: ActiveRoleEnum,
   ): Promise<ActiveRoleEnum> {
+    // Explicitly allow onboarding if user has no profiles yet
+    if (
+      !user.driverProfile &&
+      !user.customerProfile &&
+      user.role !== RoleEnum.Admin
+    ) {
+      return ActiveRoleEnum.Onboarding;
+    }
+
     if (preferred) {
       await this.ensureUserHasProfileForRole(user, preferred);
       return preferred;
     }
 
-    // default: Admin => ADMIN; else prefer CUSTOMER if exists else DRIVER
     if (user.role === RoleEnum.Admin) return ActiveRoleEnum.Admin;
 
     if (user.customerProfile) return ActiveRoleEnum.Customer;
 
     if (user.driverProfile) return ActiveRoleEnum.Driver;
 
-    // fallback
-    return ActiveRoleEnum.Customer;
+    // Fallback safety
+    return ActiveRoleEnum.Onboarding;
   }
 
   private async ensureUserHasProfileForRole(user: User, role: ActiveRoleEnum) {
-    console.log('role', role, 'user', user);
-    if (role === ActiveRoleEnum.Admin && user.role !== RoleEnum.Admin) {
+    if (role === ActiveRoleEnum.Admin && user.role !== RoleEnum.Admin)
       throw new Error('Not an admin');
-    }
 
-    if (role === ActiveRoleEnum.Driver && !user.driverProfile) {
+    if (role === ActiveRoleEnum.Onboarding) return;
+
+    if (role === ActiveRoleEnum.Driver && !user.driverProfile)
       throw new Error('Driver profile required');
-    }
 
-    if (role === ActiveRoleEnum.Customer && !user.customerProfile) {
+    if (role === ActiveRoleEnum.Customer && !user.customerProfile)
       throw new Error('Customer profile required');
-    }
   }
 
   private async hasActiveWorkInAnyRole(userId: string): Promise<boolean> {

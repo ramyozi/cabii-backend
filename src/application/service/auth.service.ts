@@ -17,6 +17,7 @@ import { Time } from '../../infrastructure/common/time.utils';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
 import { AuthTokenDto } from '../dto/auth/auth-token.dto';
 import { JwtClaimsDto } from '../dto/auth/jwt-claims.dto';
+import { PendingRoleSelectionDto } from '../dto/auth/pending-role-selection.dto';
 import { SignInRequestDto } from '../dto/auth/sign-in-request.dto';
 
 @Injectable()
@@ -42,7 +43,9 @@ export class AuthService {
     this.passwordSalt = process.env.PASSWORD_SALT || '';
   }
 
-  async signIn(signInDto: SignInRequestDto): Promise<AuthTokenDto> {
+  async signIn(
+    signInDto: SignInRequestDto,
+  ): Promise<AuthTokenDto | PendingRoleSelectionDto> {
     if (!signInDto.email?.trim() || !signInDto.password?.trim()) {
       throw new InvalidCredentialsException('Invalid email or password');
     }
@@ -62,6 +65,23 @@ export class AuthService {
     if (user.password !== hashedPassword) {
       await new Promise((r) => setTimeout(r, 150 + Math.random() * 200));
       throw new InvalidCredentialsException('Invalid email or password');
+    }
+
+    const isAdmin = user.role === RoleEnum.Admin;
+    const hasDriver = !!user.driverProfile;
+    const hasCustomer = !!user.customerProfile;
+
+    // If both exist — let frontend handle the selection
+    if (hasDriver && hasCustomer && !signInDto.activeRole && !isAdmin) {
+      const tempToken = await this.generateJwtToken(
+        user,
+        ActiveRoleEnum.Onboarding,
+      );
+
+      return {
+        pendingRoleSelection: true,
+        tempToken,
+      };
     }
 
     this.logger.debug(
@@ -313,13 +333,14 @@ export class AuthService {
 
   private getCookiesOptions(maxDurationInMilli: number): CookieOptions {
     const expirationDate = new Date(Date.now() + maxDurationInMilli);
+    const isProduction = process.env.NODE_ENV === 'production';
 
     return {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      domain: process.env.FRONTEND_DOMAIN,
+      secure: isProduction, // secure required for SameSite=None
+      domain: process.env.FRONTEND_DOMAIN || undefined,
       expires: expirationDate,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      sameSite: isProduction ? 'none' : 'none',
     };
   }
 

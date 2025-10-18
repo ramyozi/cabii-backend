@@ -14,6 +14,7 @@ import { instanceToPlain } from 'class-transformer';
 import express from 'express';
 
 import { AuthTokenResponseDto } from '../../application/dto/auth/auth-token-response.dto';
+import { AuthTokenDto } from '../../application/dto/auth/auth-token.dto';
 import { RefreshAuthRequestDto } from '../../application/dto/auth/refresh-auth-request.dto';
 import { SignInRequestDto } from '../../application/dto/auth/sign-in-request.dto';
 import { SwitchRoleDto } from '../../application/dto/auth/switch-role.dto';
@@ -48,28 +49,38 @@ export class AuthController {
     const requestStartTime = Date.now();
 
     try {
-      const tokens = await this.authService.signIn(signInRequest);
+      const result = await this.authService.signIn(signInRequest);
 
-      this.authService.setCookie(res, tokens);
+      const elapsed = Date.now() - requestStartTime;
 
-      const requestDurationInMilliseconds = Date.now() - requestStartTime;
-
-      if (requestDurationInMilliseconds < requestDuration) {
+      if (elapsed < requestDuration) {
         await new Promise((resolve) =>
-          setTimeout(resolve, requestDuration - requestDurationInMilliseconds),
+          setTimeout(resolve, requestDuration - elapsed),
         );
       }
+
+      // If pending role selection, don't set cookies yet
+      if ((result as any).pendingRoleSelection) {
+        return res.status(HttpStatus.OK).json({
+          statusCode: HttpStatus.OK,
+          data: instanceToPlain(result),
+        });
+      }
+
+      const tokens = result as AuthTokenDto;
+
+      this.authService.setCookie(res, tokens);
 
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         data: instanceToPlain(tokens),
       });
     } catch (error) {
-      const requestDurationInMilliseconds = Date.now() - requestStartTime;
+      const elapsed = Date.now() - requestStartTime;
 
-      if (requestDurationInMilliseconds < requestDuration) {
+      if (elapsed < requestDuration) {
         await new Promise((resolve) =>
-          setTimeout(resolve, requestDuration - requestDurationInMilliseconds),
+          setTimeout(resolve, requestDuration - elapsed),
         );
       }
 
@@ -132,6 +143,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Switch acting role (driver/customer/admin)' })
   @ApiResponse({ type: BaseResponseDto, status: HttpStatus.OK })
   @Post('switch-role')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async switchRole(
     @CurrentUserId() userId: string,

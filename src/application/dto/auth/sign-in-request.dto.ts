@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 
 import { ActiveRoleEnum } from '../../../domain/enums/active-role.enum';
 
@@ -13,7 +13,8 @@ export class SignInRequestDto {
   @ApiProperty()
   password: string;
 
-  @ApiProperty({ enum: ActiveRoleEnum })
+  @IsOptional()
   @IsEnum(ActiveRoleEnum)
-  activeRole: ActiveRoleEnum;
+  @ApiProperty({ enum: ActiveRoleEnum, required: false })
+  activeRole?: ActiveRoleEnum;
 }

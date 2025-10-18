@@ -23,6 +23,9 @@ async function bootstrap() {
     'http://localhost:8081',
     'http://192.168.1.32:8081',
     'http://localhost:3000',
+    // expo
+    'http://localhost:19006',
+    'exp://127.0.0.1:19000',
   ];
 
   app.enableCors({

@@ -90,6 +90,8 @@ export class AuthService {
 
     const activeRole = await this.resolveLoginRole(user, signInDto.activeRole);
 
+    this.logger.debug(`User ${signInDto.email} was logged as ${activeRole}`);
+
     const authSession = await this.authSessionService.createAuthSession(
       user,
       Time.fromDays(15).minutes,

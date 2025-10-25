@@ -47,6 +47,7 @@ export class UserController {
     status: HttpStatus.OK,
     description: 'Current User.',
   })
+  @Roles('public')
   @Get('me')
   async getMe(
     @Req() req: Request,

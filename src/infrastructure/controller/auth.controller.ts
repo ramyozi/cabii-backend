@@ -29,7 +29,6 @@ import { Roles } from '../decorator/auth/roles.decorator';
 
 @Controller('auth')
 @ApiTags('auth')
-@Roles('public')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -37,6 +36,7 @@ export class AuthController {
   @ApiResponse({ type: AuthTokenResponseDto, status: HttpStatus.OK })
   @HttpCode(HttpStatus.OK)
   @Post('sign-in')
+  @Roles('public')
   async signIn(
     @Req() req: express.Request,
     @Res() res: express.Response,
@@ -91,6 +91,7 @@ export class AuthController {
     status: HttpStatus.OK,
   })
   @Post('refresh')
+  @Roles('public')
   @HttpCode(HttpStatus.OK)
   async refresh(
     @Req() req: express.Request,
@@ -118,6 +119,7 @@ export class AuthController {
     status: HttpStatus.OK,
     description: 'Authentication tokens.',
   })
+  @Roles('public')
   @Post('sign-out')
   @HttpCode(HttpStatus.OK)
   async signOut(@Req() req: express.Request, @Res() res: express.Response) {
@@ -138,6 +140,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Switch acting role (driver/customer/admin)' })
   @ApiResponse({ type: BaseResponseDto, status: HttpStatus.OK })
   @Post('switch-role')
+  @Roles('public')
   @HttpCode(HttpStatus.OK)
   async switchRole(
     @CurrentUserId() userId: string,

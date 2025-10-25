@@ -7,7 +7,6 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -34,14 +33,12 @@ import { ReservationExecutionAppService } from '../../application/service/reserv
 import { ReservationAppService } from '../../application/service/reservation.app.service';
 import { Reservation } from '../../domain/entity/reservation.entity';
 import { ActiveRoleEnum } from '../../domain/enums/active-role.enum';
-import { JwtAuthGuard } from '../decorator/auth/jwt-auth.guard';
 import { Roles } from '../decorator/auth/roles.decorator';
-import { RolesGuard } from '../decorator/auth/roles.guard';
 
 @ApiTags('reservation')
 @Controller('reservation')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles()
 export class ReservationController {
   constructor(
     private readonly reservationAppService: ReservationAppService,

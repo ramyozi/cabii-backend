@@ -37,8 +37,7 @@ import { UserController } from './infrastructure/controller/user.controller';
 import { VehicleAccessibilityController } from './infrastructure/controller/vehicle-accessibility.controller';
 import { VehicleCategoryController } from './infrastructure/controller/vehicle-category.controller';
 import { VehicleController } from './infrastructure/controller/vehicle.controller';
-import { JwtAuthGuard } from './infrastructure/decorator/auth/jwt-auth.guard';
-import { RolesGuard } from './infrastructure/decorator/auth/roles.guard';
+import { RolesGuard } from './infrastructure/decorator/auth/jwt-auth.guard';
 import { DriverLocationGateway } from './infrastructure/gateway/driver-location.gateway';
 import { AccessibilityFeatureRepository } from './infrastructure/repository/accessibility-feature.repository';
 import { AuthSessionRepository } from './infrastructure/repository/auth-session.repository';
@@ -120,10 +119,6 @@ import { VehicleRepository } from './infrastructure/repository/vehicle.repositor
     DriverLocationGateway,
 
     /* Global Security Guards */
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

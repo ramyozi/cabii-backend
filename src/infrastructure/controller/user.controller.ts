@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Post,
   Req,
+  Res,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -52,7 +53,7 @@ export class UserController {
     @CurrentUserId(new ParseUUIDPipe()) userId: string,
   ) {
     const user = await this.userAppService.getOneById(userId);
-
+  
     return {
       statusCode: HttpStatus.OK,
       data: instanceToPlain(user, {
@@ -107,6 +108,7 @@ export class UserController {
     status: HttpStatus.OK,
     description: 'User.',
   })
+  @Roles('public')
   @Get(':userId')
   async getUserById(
     @Req() req: Express.Request,
@@ -151,6 +153,7 @@ export class UserController {
     description: 'Email availability.',
     type: EmailAvailabilityCheckResponseDto,
   })
+  @Roles('public')
   @Get('check-email')
   async checkEmailAvailability(
     @Req() req: Request,
@@ -171,6 +174,7 @@ export class UserController {
     type: PhoneAvailabilityCheckResponseDto,
   })
   @ApiOperation({ summary: 'Check phone number availability.' })
+  @Roles('public')
   @Get('check-phone')
   async checkPhoneNumberAvailability(
     @Req() req: Request,

@@ -6,10 +6,9 @@ import {
   Post,
   Req,
   Res,
-  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { instanceToPlain } from 'class-transformer';
 import express from 'express';
 
@@ -25,20 +24,18 @@ import {
   REFRESH_TOKEN_HEADER,
 } from '../../application/service/auth.service';
 import { Time } from '../common/time.utils';
-import { JwtAuthGuard } from '../decorator/auth/jwt-auth.guard';
 import { CurrentUserId } from '../decorator/auth/jwt-claim.decorator';
 import { Roles } from '../decorator/auth/roles.decorator';
-import { RolesGuard } from '../decorator/auth/roles.guard';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('auth')
+@ApiTags('auth')
+@Roles('public')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiOperation({ summary: 'Sign in user and issue tokens' })
   @ApiResponse({ type: AuthTokenResponseDto, status: HttpStatus.OK })
   @HttpCode(HttpStatus.OK)
-  @Roles('public')
   @Post('sign-in')
   async signIn(
     @Req() req: express.Request,
@@ -94,7 +91,6 @@ export class AuthController {
     status: HttpStatus.OK,
   })
   @Post('refresh')
-  @Roles('public')
   @HttpCode(HttpStatus.OK)
   async refresh(
     @Req() req: express.Request,
@@ -123,7 +119,6 @@ export class AuthController {
     description: 'Authentication tokens.',
   })
   @Post('sign-out')
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async signOut(@Req() req: express.Request, @Res() res: express.Response) {
     const refreshToken =
@@ -143,7 +138,6 @@ export class AuthController {
   @ApiOperation({ summary: 'Switch acting role (driver/customer/admin)' })
   @ApiResponse({ type: BaseResponseDto, status: HttpStatus.OK })
   @Post('switch-role')
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async switchRole(
     @CurrentUserId() userId: string,

@@ -1,63 +1,80 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-
+import { validate as isUuid } from 'uuid';
 import { JwtClaimsDto } from '../../../application/dto/auth/jwt-claims.dto';
 import {
   AUTHORIZATION_HEADER,
   COOKIE_AUTH_TOKEN_NAME,
 } from '../../../application/service/auth.service';
 
-const getJwtClaimsFromContext = (ctx: ExecutionContext): JwtClaimsDto => {
-  const request = ctx.switchToHttp().getRequest();
-  // Get token from cookies or authorization header
+/**
+ * Safely extract and verify JWT claims from request (cookie or header)
+ */
+function extractJwtClaims(ctx: ExecutionContext): JwtClaimsDto {
+  const req = ctx.switchToHttp().getRequest();
 
-  const authBearerToken =
-    request.cookies?.[COOKIE_AUTH_TOKEN_NAME] ||
-    request.headers?.[AUTHORIZATION_HEADER];
+  const rawToken =
+    req.cookies?.[COOKIE_AUTH_TOKEN_NAME] ||
+    req.headers?.[AUTHORIZATION_HEADER];
 
-  const jwtToken = authBearerToken.split(' ')[1];
+  if (!rawToken) {
+    throw new UnauthorizedException('Missing authentication token');
+  }
 
-  const jwtClaims = jwt.verify(
-    jwtToken,
-    process.env.JWT_SECRET!,
-  ) as jwt.JwtPayload;
+  const token = String(rawToken).startsWith('Bearer ')
+    ? String(rawToken).split(' ')[1]
+    : String(rawToken);
 
-  const jwtClaimsDto = new JwtClaimsDto();
+  if (!token || token.length < 10) {
+    throw new UnauthorizedException('Malformed token');
+  }
 
-  Object.assign(jwtClaimsDto, jwtClaims.claims);
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET!,
+    ) as jwt.JwtPayload;
 
-  return jwtClaimsDto;
-};
+    const claims = new JwtClaimsDto();
+    Object.assign(claims, decoded.claims);
+    return claims;
+  } catch (err) {
+    throw new UnauthorizedException('Invalid or expired token');
+  }
+}
 
 export const JwtClaims = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    return getJwtClaimsFromContext(ctx);
-  },
+  (_: unknown, ctx: ExecutionContext) => extractJwtClaims(ctx),
 );
 
-export const JwtClaim = (claimName: string) =>
-  createParamDecorator((data: unknown, ctx: ExecutionContext) => {
-    const jwtClaims = getJwtClaimsFromContext(ctx);
-
-    return jwtClaims[claimName];
+export const JwtClaim = (claimName: keyof JwtClaimsDto) =>
+  createParamDecorator((_: unknown, ctx: ExecutionContext) => {
+    const claims = extractJwtClaims(ctx);
+    return claims[claimName];
   });
 
 export const CurrentUserId = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    try {
-      const jwtClaims = getJwtClaimsFromContext(ctx);
+  (_: unknown, ctx: ExecutionContext) => {
+    const claims = extractJwtClaims(ctx);
 
-      return jwtClaims.userId;
-    } catch {
-      return null;
+    if (!claims?.userId) {
+      throw new UnauthorizedException('Missing userId in token');
     }
+    if (!isUuid(claims.userId)) {
+      throw new UnauthorizedException('Invalid userId format');
+    }
+
+    return claims.userId;
   },
 );
 
 export const CurrentUserEmail = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    const jwtClaims = getJwtClaimsFromContext(ctx);
-
-    return jwtClaims.userEmail;
+  (_: unknown, ctx: ExecutionContext) => {
+    const claims = extractJwtClaims(ctx);
+    return claims.userEmail;
   },
 );

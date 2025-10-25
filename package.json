@@ -62,7 +62,8 @@
     "socket.io-client": "^4.8.1",
     "typeorm": "^0.3.26",
     "typeorm-extension": "^3.7.1",
-    "typeorm-naming-strategies": "^4.1.0"
+    "typeorm-naming-strategies": "^4.1.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
